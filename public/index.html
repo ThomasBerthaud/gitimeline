@@ -1,18 +1,18 @@
 <head>
     <title>VUE.JS test app</title>
     <script src="vue/dist/vue.js"></script>
+    <script src="vue-resource/dist/vue-resource.js"></script>
 </head>
 
 <body>
     <div id="content">
-        {{message}}
+        <input v-model="repo" type="text"></input>
+        <button v-on:click="getCommits">Télécharger les commits</button>
+        <ul v-if="commits.length">
+            <li v-for="commit in commits">
+                {{commit.commit.message}}
+            </li>
+        </ul>
     </div>
-    <script>
-        var app = new Vue({
-            el: "#content",
-            data: {
-                message: "Hello world, ceci est un message Vue.js"
-            }
-        }) 
-    </script>
+    <script src="js/main.js"></script>
 </body>
