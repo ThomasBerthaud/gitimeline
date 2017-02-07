@@ -1,0 +1,18 @@
+<head>
+    <title>VUE.JS test app</title>
+    <script src="vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="content">
+        {{message}}
+    </div>
+    <script>
+        var app = new Vue({
+            el: "#content",
+            data: {
+                message: "Hello world, ceci est un message Vue.js"
+            }
+        }) 
+    </script>
+</body>
