@@ -6,11 +6,11 @@
 
 <body>
     <div id="content">
-        <input v-model="repo" type="text"></input>
+        <input v-model="repo" type="text">
         <button v-on:click="getCommits">Télécharger les commits</button>
         <ul v-if="commits.length">
             <li v-for="commit in commits">
-                {{commit.commit.message}}
+                {{commit.commit.committer.name}} - {{commit.commit.message}}
             </li>
         </ul>
     </div>
