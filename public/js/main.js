@@ -3,6 +3,7 @@ var app = new Vue({
     el: "#content",
     data: {
         repoUrl: '',
+        repoNotExist: false,
         commits: []
     },
     methods: {
@@ -14,7 +15,11 @@ var app = new Vue({
 
             this.$http.get(apiUrl + '/commits/history?url=' + this.repoUrl).then(result => {
                 this.commits = result.body;
-            }).catch(console.log);
+                this.repoNotExist = false;
+            }).catch(function(err){
+                console.log(err);
+                this.repoNotExist = true;
+            });
         }
     }
 }) 

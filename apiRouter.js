@@ -9,12 +9,16 @@ router.get('/commits/history', function (req, res) {
     return;
   }
   var pathToRepo = path.join(__dirname, 'repos/' + repoName);
+  console.log(pathToRepo);
 
   Git.Repository.open(pathToRepo).then(retrieveCommits).catch(function (err) {
     console.log(err);
     Git.Clone(req.query.url, pathToRepo)
     .then(retrieveCommits)
-    .catch(console.log);
+    .catch(function(err){
+        console.log(err);
+        res.status(404).send();
+    });
   });
 
   function retrieveCommits(repo) {

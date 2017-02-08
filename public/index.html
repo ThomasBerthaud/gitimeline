@@ -1,13 +1,16 @@
 <head>
-    <title>VUE.JS test app</title>
+    <title>Gitimeline</title>
     <script src="vue/dist/vue.js"></script>
     <script src="vue-resource/dist/vue-resource.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
     <div id="content">
         <input v-model="repoUrl" type="text">
         <button v-on:click="getCommits" v-bind:disabled="!repoUrl">Télécharger les commits</button>
+        <div v-if="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <ul v-if="commits.length">
             <li v-for="commit in commits">
                 {{commit.author}} - {{commit.message}}
