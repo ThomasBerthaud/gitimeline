@@ -1,8 +1,0 @@
-url to get all commits of a repo: GET https://api.github.com/repos/:owner/:repo/commits result =>
-  commits = result.body
-
-get changes on one commit: GET commits[index].url infos =>
-  changes = infos.body.files
-
-  for change in changes:
-    toDisplay = change.patch
