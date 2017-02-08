@@ -5,7 +5,8 @@ little project displaying infos on a repo github.
 ```npm install```
 
 ## START ##
-```node app.js```
+```node app.js``` ou ```npm start```
+
 
 ## UTILS ##
-clean folder containing git repos: ```rm -rf repos/*```
+clean folder containing git repos: ```npm run clean```

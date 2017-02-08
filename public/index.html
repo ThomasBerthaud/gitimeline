@@ -9,11 +9,12 @@
 <body>
     <div id="content">
         <input v-model="repoUrl" type="text">
-        <button v-on:click="getCommits" v-bind:disabled="!repoUrl">Télécharger les commits</button>
-        <div v-if="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
+        <button v-on:click="getCommits">Télécharger les commits</button>
+        <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <ul v-if="commits.length">
             <li v-for="commit in commits">
                 {{commit.author}} - {{commit.message}}
+                <a :href="commit.url"> infos sur le commit</a>
             </li>
         </ul>
     </div>

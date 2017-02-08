@@ -13,7 +13,11 @@ var app = new Vue({
                 return;
             }
 
-            this.$http.get(apiUrl + '/commits/history?url=' + this.repoUrl).then(result => {
+            var infos = this.repoUrl.split('/');
+            var owner = infos.slice(-2, -1);
+            var repo = infos.slice(-1);
+
+            this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(result => {
                 this.commits = result.body;
                 this.repoNotExist = false;
             }).catch(function(err){

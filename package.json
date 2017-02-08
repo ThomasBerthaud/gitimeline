@@ -4,7 +4,9 @@
   "description": "SPA that shows a timeline of git commits on a repo",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf repos/*"
   },
   "author": "Thomas Berthaud",
   "license": "ISC",
