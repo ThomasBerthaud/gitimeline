@@ -7,7 +7,7 @@ var app = new Vue({
         commits: []
     },
     methods: {
-        getCommits: function () {
+        getHistory: function () {
             if (!this.repoUrl) {
                 console.log('need to give a repo url');
                 return;
@@ -17,12 +17,26 @@ var app = new Vue({
             var owner = infos.slice(-2, -1);
             var repo = infos.slice(-1);
 
+            this.repoInfos = {owner, repo};
+
             this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(result => {
                 this.commits = result.body;
                 this.repoNotExist = false;
             }).catch(function(err){
                 console.log(err);
                 this.repoNotExist = true;
+            });
+        },
+        getCommitFiles: function(sha){
+             if (!this.repoInfos) {
+                console.log('need to give a repo url');
+                return;
+            }
+
+            this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(result => {
+                console.log(result.body);
+            }).catch(function(err){
+                console.log(err);
             });
         }
     }
