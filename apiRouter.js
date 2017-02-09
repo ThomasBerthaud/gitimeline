@@ -44,7 +44,7 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
                     let infos = { name: entry.name(), type: entry.type() };
                     if (entry.isBlob()) {
                         promises.push(entry.getBlob().then(function (blob) {
-                            infos.blob = blob.content().toString();
+                            infos.content = blob.content().toString();
                         }));
                     }
                     files.push(infos);

@@ -1,4 +1,14 @@
+body{
+    background-color: #fff;
+}
+
 .error {
     color: #DD3333;
     font-weight: bold;
+}
+
+.file-content {
+    margin: 5px;
+    width: 33%;
+    font-size: 50%;
 }
