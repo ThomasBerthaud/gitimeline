@@ -10,6 +10,7 @@ router.get('/repos/:owner/:repoName/commits/history', function (req, res) {
 
             history.on('commit', function (commit) {
                 list.push({
+                    "date": commit.date(),
                     "author": commit.committer().name(),
                     "message": commit.message(),
                     "sha": commit.sha()
@@ -102,11 +103,11 @@ var getGitRepo = function (params) {
         }
 
         Git.Repository.open(pathToRepo).then(resolve).catch(function (err) {
-            console.log(err);
+            console.log('error while opening', err);
             Git.Clone(`https://github.com/${owner}/${repoName}`, pathToRepo)
                 .then(resolve)
                 .catch(function (err) {
-                    console.log(err);
+                    console.log('error while downloading', err);
                     reject(err);
                 });
         });
