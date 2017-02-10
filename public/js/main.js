@@ -3,6 +3,8 @@ var app = new Vue({
     el: "#content",
     data: {
         waitTime: 1,
+        timeoutId: null,
+        pending: false,
         repoUrl: '',
         repoNotExist: false,
         repoInfos: null,
@@ -27,12 +29,14 @@ var app = new Vue({
                 return;
             }
             console.log('retrieving files', sha);
+            this.pending = true;
 
             this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(result => {
                 this.files[sha] = result.body;
                 displayFiles.call(this);
             }).catch(function (err) {
                 console.log(err);
+                this.pending = false;
             });
             function displayFiles() {
                 this.currentFiles = this.files[sha];
@@ -40,6 +44,7 @@ var app = new Vue({
                 this.$nextTick(function () {
                     var blocks = document.querySelectorAll('pre code');
                     blocks.forEach(hljs.highlightBlock);
+                    this.pending = false;
                 })
             }
         }
@@ -78,12 +83,22 @@ var app = new Vue({
             advance();
 
             function advance() {
-                setTimeout(function () {
-                    self.commitSelected = self.reversedCommitsSha[index];
-                    index++;
-                    if(index < self.reversedCommitsSha.length) advance();
+                if (self.timeoutId) clearTimeout(self.timeoutId);
+                self.timeoutId = setTimeout(function () {
+                    //if HTTP request is not done, wait
+                    if (self.pending) {
+                        advance();
+                    } else {
+                        self.commitSelected = self.reversedCommitsSha[index];
+                        index++;
+                        if (index < self.reversedCommitsSha.length) advance();
+                    }
                 }, self.waitTime * 1000);
             }
+        },
+        stopTimeline: function () {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = null;
         }
     }
 }) 

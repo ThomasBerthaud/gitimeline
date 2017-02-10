@@ -37,23 +37,28 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
     getGitRepo(req.params).then(function (repo) {
         return repo.getCommit(req.params.sha).then(function (commit) {
             return commit.getTree().then(function (tree) {
-                var entries = tree.entries();
                 var files = [], promises = [];
 
-                entries.forEach(function (entry) {
-                    let infos = { name: entry.name(), type: entry.type(), path: entry.path() };
-                    if (entry.isBlob()) {
-                        promises.push(entry.getBlob().then(function (blob) {
-                            infos.content = blob.content().toString();
-                        }));
+                var walker = tree.walk(true);
+
+                walker.on('entry', function (entry) {
+                    let file = {
+                        name: entry.name(),
+                        path: entry.path()
                     }
-                    files.push(infos);
+                    promises.push(entry.getBlob().then(function (blob) {
+                        file.content = blob.content().toString()
+                    }));
+                    files.push(file);
                 })
 
-                Promise.all(promises).then(function () {
-                    res.status(200).send(files)
-                });
+                walker.on('end', function () {
+                    Promise.all(promises).then(function () {
+                        res.status(200).send(files)
+                    });
+                })
 
+                walker.start();
             })
         });
     }).catch(function (err) {

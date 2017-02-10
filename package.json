@@ -16,5 +16,8 @@
     "nodegit": "^0.17.0",
     "vue": "^2.1.10",
     "vue-resource": "^1.2.0"
+  },
+  "devDependencies": {
+    "morgan": "^1.8.0"
   }
 }
