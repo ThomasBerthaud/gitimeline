@@ -2,6 +2,7 @@ var apiUrl = 'http://localhost:3000/api';
 var app = new Vue({
     el: "#content",
     data: {
+        waitTime: 1,
         repoUrl: '',
         repoNotExist: false,
         repoInfos: null,
@@ -9,6 +10,13 @@ var app = new Vue({
         commits: [],
         files: {},
         currentFiles: []
+    },
+    computed: {
+        reversedCommitsSha: function () {
+            return this.commits.map(function (com) {
+                return com.sha;
+            }).reverse();
+        }
     },
     watch: {
         commitSelected: function (sha) {
@@ -63,6 +71,19 @@ var app = new Vue({
                 console.log(err);
                 this.repoNotExist = true;
             });
+        },
+        timeline: function () {
+            var self = this, index = 1;
+            this.commitSelected = this.reversedCommitsSha[0];
+            advance();
+
+            function advance() {
+                setTimeout(function () {
+                    self.commitSelected = self.reversedCommitsSha[index];
+                    index++;
+                    if(index < self.reversedCommitsSha.length) advance();
+                }, self.waitTime * 1000);
+            }
         }
     }
 }) 

@@ -13,11 +13,14 @@
     <div id="content">
         <input v-model="repoUrl" type="text">
         <button @click="getHistory" :disabled="!repoUrl">Télécharger les commits</button>
-        <select v-show="repoInfos && !repoNotExist" v-model="commitSelected">
-            <option v-for="commit in commits" :value="commit.sha">
-                {{commit.author}} - {{trim(commit.message)}}
-            </option>
-        </select>
+        <div v-show="repoInfos && !repoNotExist">
+            <button @click="timeline">Timeline</button>
+            <select v-model="commitSelected">
+                <option v-for="commit in commits" :value="commit.sha">
+                    {{commit.author}} - {{trim(commit.message)}}
+                </option>
+            </select>
+        </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">
             <div v-for="file in currentFiles" class="file-content" :key="file.path + file.content" :title="file.name">
@@ -25,6 +28,8 @@
             </div>
         </div>
     </div>
-    <script>hljs.initHighlightingOnLoad()</script>
+    <script>
+        hljs.initHighlightingOnLoad()
+    </script>
     <script src="js/main.js"></script>
 </body>
