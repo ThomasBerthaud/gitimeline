@@ -7,22 +7,33 @@ var app = new Vue({
         repoInfos: null,
         commitSelected: null,
         commits: [],
-        files: []
+        files: {},
+        currentFiles: []
     },
     watch: {
         commitSelected: function (sha) {
             if (!sha || !this.repoInfos) return;
 
+            if (this.files[sha]) {
+                displayFiles.call(this);
+                return;
+            }
+            console.log('retrieving files', sha);
+
             this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(result => {
-                this.files = result.body;
+                this.files[sha] = result.body;
+                displayFiles.call(this);
+            }).catch(function (err) {
+                console.log(err);
+            });
+            function displayFiles() {
+                this.currentFiles = this.files[sha];
 
                 this.$nextTick(function () {
                     var blocks = document.querySelectorAll('pre code');
                     blocks.forEach(hljs.highlightBlock);
                 })
-            }).catch(function (err) {
-                console.log(err);
-            });
+            }
         }
     },
     methods: {

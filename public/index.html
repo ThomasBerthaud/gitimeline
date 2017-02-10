@@ -20,7 +20,7 @@
         </select>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">
-            <div v-for="file in files" class="file-content" :title="file.name">
+            <div v-for="file in currentFiles" class="file-content" :key="file.path + file.content" :title="file.name">
                 <pre><code>{{file.content}}</code></pre>
             </div>
         </div>
