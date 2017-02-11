@@ -18,6 +18,28 @@ var app = new Vue({
             return this.commits.map(function (com) {
                 return com.sha;
             }).reverse();
+        },
+        currentFilesStyled: function () {
+            if (!this.currentFiles || (this.currentFiles && !this.currentFiles.length)) return;
+
+            let max = _.max(this.currentFiles, getSize).size;
+            let min = _.min(this.currentFiles, getSize).size;
+            let distance = this.maxSize - this.minSize;
+
+            function getSize(file) {
+                return file.size;
+            }
+
+            return this.currentFiles.map(function (file) {
+                let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
+                file.style = {
+                    width: len + 'px',
+                    height: len + 'px',
+                    lineHeight: len + 'px',
+                    fontSize: (len * 30 / 100) + 'px'
+                }
+                return file;
+            }, this);
         }
     },
     watch: {

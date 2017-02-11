@@ -1,8 +1,9 @@
 <head>
     <title>Gitimeline</title>
     <script src="vue/dist/vue.js"></script>
-    <script src="vue-resource/dist/vue-resource.js"></script>
-    <script src="highlightjs/highlight.pack.js"></script>
+    <script src="vue-resource/dist/vue-resource.min.js"></script>
+    <script src="highlightjs/highlight.pack.min.js"></script>
+    <script src="underscore/underscore-min.js"></script>
 
 
     <link rel="stylesheet" href="highlightjs/styles/atom-one-dark.css">
@@ -24,8 +25,8 @@
         </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">
-            <div v-for="file in currentFiles" class="file-content" :key="file.path" :title="file.path">
-                <pre><code>{{file.content}}</code></pre>
+            <div v-for="file in currentFilesStyled" class="file-content" :key="file.path" :title="file.path">
+                <div :style="file.style">{{file.size}}</div>
             </div>
         </div>
     </div>
