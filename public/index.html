@@ -25,8 +25,10 @@
         </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">
-            <div v-for="file in currentFilesStyled" class="file-content" :key="file.path" :title="file.path">
-                <div :style="file.style">{{file.size}}</div>
+            <div v-for="file in currentFilesStyled" class="file-content" :key="file.path + file.size" :title="file.path">
+                <div class="circle" :style="file.style"> 
+                    {{file.size}}
+                </div>
             </div>
         </div>
     </div>

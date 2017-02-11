@@ -11,7 +11,9 @@ var app = new Vue({
         commitSelected: null,
         commits: [],
         files: {},
-        currentFiles: []
+        currentFiles: [],
+        minSize: 30,
+        maxSize: 300
     },
     computed: {
         reversedCommitsSha: function () {
