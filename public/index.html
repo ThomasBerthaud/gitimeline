@@ -27,7 +27,7 @@
         <div id="file-container">
             <div v-for="file in currentFilesStyled" class="file-content" :key="file.path + file.size" :title="file.path">
                 <div class="circle" :style="file.style"> 
-                    {{file.size}}
+                    {{file.size || file.name}}
                 </div>
             </div>
         </div>

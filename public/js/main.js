@@ -13,7 +13,8 @@ var app = new Vue({
         files: {},
         currentFiles: [],
         minSize: 30,
-        maxSize: 300
+        maxSize: 300,
+        colors: ['#000', 'dodgerblue', '#0f0']
     },
     computed: {
         reversedCommitsSha: function () {
@@ -23,7 +24,7 @@ var app = new Vue({
         },
         currentFilesStyled: function () {
             if (!this.currentFiles || (this.currentFiles && !this.currentFiles.length)) return;
-
+            let filesStyled = [];
             let max = _.max(this.currentFiles, getSize).size;
             let min = _.min(this.currentFiles, getSize).size;
             let distance = this.maxSize - this.minSize;
@@ -32,16 +33,45 @@ var app = new Vue({
                 return file.size;
             }
 
-            return this.currentFiles.map(function (file) {
+            function calcStyle(file) {
                 let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
                 file.style = {
+                    backgroundColor: this.colors[file.type - 1],
                     width: len + 'px',
                     height: len + 'px',
                     lineHeight: len + 'px',
                     fontSize: (len * 30 / 100) + 'px'
                 }
                 return file;
+            }
+
+            function findParent(folders, files, index){
+                var parent = files.find(function(file){
+                    return file.name === folders[index];
+                });
+
+                if(index === folders.length - 2){
+                    return parent;
+                }else {
+                    return findParent(folders, parent.childs, index + 1);
+                }
+            }
+
+            this.currentFiles.forEach(function(file){
+                let folders = file.path.split('\\');
+                if(folders.length <= 1){
+                    filesStyled.push(calcStyle.call(this, file));
+                }else {
+                    var parent = findParent(folders, filesStyled, 0);
+                    if(!parent.childs) parent.childs = [];
+                    parent.childs.push(calcStyle.call(this, file));
+                }
+                console.log(folders, filesStyled)
             }, this);
+
+            console.log(filesStyled);   
+
+            return filesStyled;
         }
     },
     watch: {
