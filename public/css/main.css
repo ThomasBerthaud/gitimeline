@@ -13,12 +13,17 @@ body{
     justify-content: center;
 }
 
-.file-content {
-    margin: 5px;
-    font-size: 50%;
+.folder {
+    text-align: center;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
-.circle {
+.file {
+    margin: 5px;
+    font-size: 50%;
     border-radius: 50%;
     text-align: center;
 }

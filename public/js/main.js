@@ -1,4 +1,23 @@
 var apiUrl = 'http://localhost:3000/api';
+
+///COMPONENTS///////////////////////////////
+Vue.component('file-component', {
+    name: 'file-component',
+    props: ['file'],
+    template:
+    '<div v-if="file.type === 3" class="file" :style="file.style">' +
+    '      {{file.size}} ' +
+    '  </div> ' +
+    '  <div v-else class="folder" :style="file.style"> ' +
+    '     {{file.name}}' +
+    '      <div v-for="child in file.childs" :key="child.path + child.size" :title="child.path">' +
+    '          <file-component :file="child"></file-component>' +
+    '      </div>' +
+    '  </div>',
+});
+///////////////////////////////////////////
+
+/////VUE/////////////////////////////////////////
 var app = new Vue({
     el: "#content",
     data: {
@@ -12,9 +31,9 @@ var app = new Vue({
         commits: [],
         files: {},
         currentFiles: [],
-        minSize: 30,
-        maxSize: 300,
-        colors: ['#000', 'dodgerblue', '#0f0']
+        minSize: 25,
+        maxSize: 100,
+        colors: ['#000', 'rgba(102, 160, 255, 0.4)', '#42f486']
     },
     computed: {
         reversedCommitsSha: function () {
@@ -29,47 +48,53 @@ var app = new Vue({
             let min = _.min(this.currentFiles, getSize).size;
             let distance = this.maxSize - this.minSize;
 
+            if(max === min) max++; //avoir error when only one file
+
             function getSize(file) {
                 return file.size;
             }
 
             function calcStyle(file) {
-                let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
-                file.style = {
-                    backgroundColor: this.colors[file.type - 1],
-                    width: len + 'px',
-                    height: len + 'px',
-                    lineHeight: len + 'px',
-                    fontSize: (len * 30 / 100) + 'px'
+                file.style = { backgroundColor: this.colors[file.type - 1] };
+                if (file.type === 3) {
+                    let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
+                    if(file.style.backgroundColor === "gitHub") {
+                        let ext = file.name.split('.')[file.name.split('.').length - 1];
+                        let color = GitHubColors.ext(ext);
+                        file.style.backgroundColor = color;
+                    }
+                    file.style = _.extend(file.style, {
+                        width: len + 'px',
+                        height: len + 'px',
+                        lineHeight: len + 'px',
+                        fontSize: (len * 30 / 100) + 'px'
+                    });
                 }
                 return file;
             }
 
-            function findParent(folders, files, index){
-                var parent = files.find(function(file){
+            function findParent(folders, files, index) {
+                var parent = files.find(function (file) {
                     return file.name === folders[index];
                 });
 
-                if(index === folders.length - 2){
+                if (index === folders.length - 2) {
                     return parent;
-                }else {
+                } else {
                     return findParent(folders, parent.childs, index + 1);
                 }
             }
 
-            this.currentFiles.forEach(function(file){
+            this.currentFiles.forEach(function (file) {
                 let folders = file.path.split('\\');
-                if(folders.length <= 1){
+                if (folders.length <= 1) {
                     filesStyled.push(calcStyle.call(this, file));
-                }else {
+                } else {
                     var parent = findParent(folders, filesStyled, 0);
-                    if(!parent.childs) parent.childs = [];
+                    if (!parent.childs) parent.childs = [];
                     parent.childs.push(calcStyle.call(this, file));
                 }
-                console.log(folders, filesStyled)
             }, this);
-
-            console.log(filesStyled);   
 
             return filesStyled;
         }
