@@ -44,6 +44,7 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
 
                 walker.on('entry', function (entry) {
                     let file = {
+                        oid: entry.oid(),
                         name: entry.name(),
                         path: entry.path(),
                         type: entry.type()

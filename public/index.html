@@ -25,13 +25,10 @@
         </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">
-            <div v-for="file in currentFilesStyled" :key="file.path + file.size" :title="file.path">
+            <div v-for="file in currentFilesStyled" :title="file.path">
                 <file-component :file="file"></file-component>
             </div>
         </div>
     </div>
-    <script>
-        hljs.initHighlightingOnLoad()
-    </script>
     <script src="js/main.js"></script>
 </body>

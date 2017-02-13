@@ -10,7 +10,7 @@ Vue.component('file-component', {
     '  </div> ' +
     '  <div v-else class="folder" :style="file.style"> ' +
     '     {{file.name}}' +
-    '      <div v-for="child in file.childs" :key="child.path + child.size" :title="child.path">' +
+    '      <div v-for="child in file.childs" :title="child.path">' +
     '          <file-component :file="child"></file-component>' +
     '      </div>' +
     '  </div>',
@@ -29,7 +29,6 @@ var app = new Vue({
         repoInfos: null,
         commitSelected: null,
         commits: [],
-        files: {},
         currentFiles: [],
         minSize: 25,
         maxSize: 100,
@@ -42,7 +41,6 @@ var app = new Vue({
             }).reverse();
         },
         currentFilesStyled: function () {
-            if (!this.currentFiles || (this.currentFiles && !this.currentFiles.length)) return;
             let filesStyled = [];
             let max = _.max(this.currentFiles, getSize).size;
             let min = _.min(this.currentFiles, getSize).size;
@@ -58,6 +56,7 @@ var app = new Vue({
                 file.style = { backgroundColor: this.colors[file.type - 1] };
                 if (file.type === 3) {
                     let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
+                    //not working
                     if(file.style.backgroundColor === "gitHub") {
                         let ext = file.name.split('.')[file.name.split('.').length - 1];
                         let color = GitHubColors.ext(ext);
@@ -103,29 +102,19 @@ var app = new Vue({
         commitSelected: function (sha) {
             if (!sha || !this.repoInfos) return;
 
-            if (this.files[sha]) {
-                displayFiles.call(this);
-                return;
-            }
             console.log('retrieving files', sha);
             this.pending = true;
 
             this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(result => {
-                this.files[sha] = result.body;
-                displayFiles.call(this);
+                this.currentFiles = result.body;
+
+                this.$nextTick(function () {
+                    this.pending = false;
+                })
             }).catch(function (err) {
                 console.log(err);
                 this.pending = false;
             });
-            function displayFiles() {
-                this.currentFiles = this.files[sha];
-
-                this.$nextTick(function () {
-                    var blocks = document.querySelectorAll('pre code');
-                    blocks.forEach(hljs.highlightBlock);
-                    this.pending = false;
-                })
-            }
         }
     },
     methods: {
