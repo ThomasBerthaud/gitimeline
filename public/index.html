@@ -7,22 +7,23 @@
 
 
     <link rel="stylesheet" href="highlightjs/styles/atom-one-dark.css">
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 
 <body>
     <div id="content">
-        <input v-model="repoUrl" type="text">
-        <button @click="getHistory" :disabled="!repoUrl">Télécharger les commits</button>
-        <div v-show="pending">Téléchargement en cours</div>
-        <div v-show="repoInfos && !repoNotExist">
-            <button @click="timeline">Timeline</button>
-            <button @click="stopTimeline" v-show="timeoutId">X</button>
-            <select v-model="commitSelected">
+        <div id="nav">
+            <input class="input-round" id="repo-input" v-model="repoUrl" type="text">
+            <button class="btn" @click="getHistory" :disabled="!repoUrl"><i class="fa fa-download" aria-hidden="true"></i></button>
+            <span v-show="pending">Téléchargement en cours</span>
+            <select class="input-round" v-model="commitSelected" v-show="repoInfos && !repoNotExist">
                 <option v-for="commit in commits" :value="commit.sha">
                     {{commit.author}} - {{trim(commit.message)}}
                 </option>
             </select>
+            <button class="btn" @click="timeline" v-show="repoInfos && !repoNotExist"><i class="fa fa-clock-o" aria-hidden="true"></i> Timeline</button>
+            <button class="btn" @click="stopTimeline" v-show="timeoutId" v-show="repoInfos && !repoNotExist"><i class="fa fa-stop" aria-hidden="true"></i> Stop</button>
         </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
         <div id="file-container">

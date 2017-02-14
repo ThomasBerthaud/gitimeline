@@ -127,7 +127,7 @@ var app = new Vue({
     },
     methods: {
         trim: function (string) {
-            var length = 20;
+            var length = 10;
             return string.length > length ?
                 string.substring(0, length - 3) + "..." :
                 string;

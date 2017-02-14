@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.14.1",
+    "font-awesome": "^4.7.0",
     "github-colors": "^2.2.10",
     "highlightjs": "^9.8.0",
     "nodegit": "^0.17.0",
