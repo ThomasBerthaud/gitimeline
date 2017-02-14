@@ -3,7 +3,6 @@ var GitHubColors = null;
 
 ///COMPONENTS///////////////////////////////
 Vue.component('file-component', {
-    name: 'file-component',
     props: ['file'],
     template:
     '<div v-if="file.type === 3" class="file" :style="file.style">' +
@@ -154,12 +153,16 @@ var app = new Vue({
 
             this.repoInfos = { owner, repo };
 
+            this.pending = true;
+
             this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(commitsHTTP => {
                 this.commits = commitsHTTP.body;
                 this.repoNotExist = false;
+                this.pending = false;
             }).catch(function (err) {
                 console.log(err);
                 this.repoNotExist = true;
+                this.pending = false;
             });
         },
         timeline: function () {
