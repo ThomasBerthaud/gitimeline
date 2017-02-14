@@ -30,18 +30,20 @@
             <button class="btn" @click="stopTimeline" v-show="timeoutId" v-show="repoInfos && !repoNotExist"><i class="fa fa-stop" aria-hidden="true"></i> Stop</button>
         </div>
         <div v-show="repoNotExist" class="error"> Erreur: dépot non trouvé </div>
-        <div v-if="selectedFile" id="file-details">
-            <div class="header">
-                {{selectedFile.name}}
-                <span class="close" @click="selectedFile = null"><i class="fa fa-times" aria-hidden="true"></i></span>
+        <transition name="fade" mode="out-in">
+            <div v-if="selectedFile" id="file-details" key="details">
+                <div class="header">
+                    {{selectedFile.name}}
+                    <span class="close" @click="selectedFile = null"><i class="fa fa-times" aria-hidden="true"></i></span>
+                </div>
+                <pre><code class="hljs" :class="selectedFile.highlighted.language"><div v-html="selectedFile.highlighted.value"></div></code></pre>
             </div>
-            <pre><code class="hljs" :class="selectedFile.highlighted.language"><div v-html="selectedFile.highlighted.value"></div></code></pre>
-        </div>
-        <div v-else id="file-container">
-            <div v-for="file in currentFilesStyled" :title="file.path">
-                <files :file="file" @display="displayFile"></files>
+            <div v-else id="file-container" key="files">
+                <div v-for="file in currentFilesStyled" :title="file.path">
+                    <files :file="file" @display="displayFile"></files>
+                </div>
             </div>
-        </div>
+        </transition>
     </div>
     <script src="js/main.js"></script>
 </body>

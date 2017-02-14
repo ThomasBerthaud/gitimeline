@@ -170,6 +170,9 @@ var app = new Vue({
             this.repoInfos = { owner, repo };
 
             this.pending = true;
+            this.commitSelected = null;
+            this.currentFiles = [];
+            this.selectedFile = null;
 
             this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(commitsHTTP => {
                 this.commits = commitsHTTP.body;
