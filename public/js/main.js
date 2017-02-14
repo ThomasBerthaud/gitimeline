@@ -107,9 +107,6 @@ var app = new Vue({
         commitSelected: function (sha) {
             if (!sha || !this.repoInfos) return;
 
-            console.log('retrieving files', sha);
-            this.pending = true;
-
             this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(filesHTTP => {
                 if (!GitHubColors) {
                     return this.$http.get(apiUrl + '/GitHubColors/ext').then(colorsHTTP => {
@@ -119,17 +116,12 @@ var app = new Vue({
                 } else {
                     return setCurrentFiles.call(this, filesHTTP);
                 }
-
             }).catch(function (err) {
                 console.error(err);
-                this.pending = false;
             });
 
             function setCurrentFiles(filesHTTP) {
                 this.currentFiles = filesHTTP.body;
-                this.$nextTick(function () {
-                    this.pending = false;
-                })
             }
         }
     },
@@ -160,7 +152,7 @@ var app = new Vue({
                 this.repoNotExist = false;
                 this.pending = false;
             }).catch(function (err) {
-                console.log(err);
+                console.error(err);
                 this.repoNotExist = true;
                 this.pending = false;
             });

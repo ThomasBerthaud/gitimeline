@@ -3,11 +3,11 @@ var Git = require('nodegit');
 var GithubColor = require('github-colors');
 var router = require('express').Router();
 
-router.get('/GithubColors/ext(/:extension)?', function(req, res){
-    if(!req.params.extension){
+router.get('/GithubColors/ext(/:extension)?', function (req, res) {
+    if (!req.params.extension) {
         var extensions = GithubColor.init(true);
         res.json(extensions);
-    }else {
+    } else {
         var extInfos = GithubColor.ext(req.params.extension);
         res.send(extInfos);
     }
@@ -89,6 +89,16 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
 var getGitRepo = function (params) {
     var {owner, repoName} = params;
     var pathToRepo = path.join(__dirname, `repos/${owner}_${repoName}`);
+    var cloneOptions = {
+        fetchOpts: {
+            callbacks: {
+                transferProgress: function(log){
+                    //console.log(`transfer : ${log.receivedObjects()} / ${log.totalObjects()} (${log.indexedObjects()})`);
+
+                }
+            }
+        }
+    }
     return new Promise(function (resolve, reject) {
         if (!owner || !repoName) {
             reject('wrong parameters');
@@ -97,7 +107,7 @@ var getGitRepo = function (params) {
 
         Git.Repository.open(pathToRepo).then(resolve).catch(function (err) {
             console.log('error while opening', err);
-            Git.Clone(`https://github.com/${owner}/${repoName}`, pathToRepo)
+            Git.Clone(`https://github.com/${owner}/${repoName}`, pathToRepo, cloneOptions)
                 .then(resolve)
                 .catch(function (err) {
                     console.log('error while downloading', err);
