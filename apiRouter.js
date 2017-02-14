@@ -1,10 +1,21 @@
 var path = require('path');
 var Git = require('nodegit');
+var GithubColor = require('github-colors');
 var router = require('express').Router();
+
+router.get('/GithubColors/ext(/:extension)?', function(req, res){
+    if(!req.params.extension){
+        var extensions = GithubColor.init(true);
+        res.json(extensions);
+    }else {
+        var extInfos = GithubColor.ext(req.params.extension);
+        res.send(extInfos);
+    }
+});
 
 router.get('/repos/:owner/:repoName/commits/history', function (req, res) {
     getGitRepo(req.params).then(function (repo) {
-        return repo.getMasterCommit().then(function (firstComm) {
+        return repo.getHeadCommit().then(function (firstComm) {
             var history = firstComm.history();
             var list = [];
 
@@ -67,31 +78,6 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
                 })
 
                 walker.start();
-            })
-        });
-    }).catch(function (err) {
-        console.log(err);
-        res.status(404).send();
-    })
-})
-
-router.get('/repos/:owner/:repoName/commits/:sha/diffStats', function (req, res) {
-    getGitRepo(req.params).then(function (repo) {
-        return repo.getCommit(req.params.sha).then(function (commit) {
-            return commit.getDiff().then(function (arrayDiffs) {
-                var promises = [];
-                arrayDiffs.forEach(function (diff) {
-                    promises.push(diff.patches());
-                })
-
-                return Promise.all(promises).then(function (arrayDiffs) {
-                    arrayDiffs = arrayDiffs.map(function (arrayConvenientPatch) {
-                        return arrayConvenientPatch.map(function (patch) {
-                            return { stats: patch.lineStats(), file: patch.newFile().path() };
-                        });
-                    });
-                    res.status(200).send(arrayDiffs);
-                })
             })
         });
     }).catch(function (err) {

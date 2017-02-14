@@ -1,4 +1,5 @@
 var apiUrl = 'http://localhost:3000/api';
+var GitHubColors = null;
 
 ///COMPONENTS///////////////////////////////
 Vue.component('file-component', {
@@ -21,7 +22,7 @@ Vue.component('file-component', {
 var app = new Vue({
     el: "#content",
     data: {
-        waitTime: 1,
+        waitTime: 0.5,
         timeoutId: null,
         pending: false,
         repoUrl: '',
@@ -32,7 +33,7 @@ var app = new Vue({
         currentFiles: [],
         minSize: 25,
         maxSize: 100,
-        colors: ['#000', 'rgba(102, 160, 255, 0.4)', '#42f486']
+        fileColor: "gitHub"
     },
     computed: {
         reversedCommitsSha: function () {
@@ -46,28 +47,33 @@ var app = new Vue({
             let min = _.min(this.currentFiles, getSize).size;
             let distance = this.maxSize - this.minSize;
 
-            if(max === min) max++; //avoir error when only one file
+            if (max === min) max++; //avoir error when only one file
 
             function getSize(file) {
                 return file.size;
             }
 
             function calcStyle(file) {
-                file.style = { backgroundColor: this.colors[file.type - 1] };
                 if (file.type === 3) {
                     let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
-                    //not working
-                    if(file.style.backgroundColor === "gitHub") {
-                        let ext = file.name.split('.')[file.name.split('.').length - 1];
-                        let color = GitHubColors.ext(ext);
-                        file.style.backgroundColor = color;
-                    }
-                    file.style = _.extend(file.style, {
+                    let perc = file.size > 1000 ? 0.45 : 0.6; //to avoid big numbers steping out of div
+
+                    file.style = {
+                        borderColor: this.fileColor,
                         width: len + 'px',
                         height: len + 'px',
                         lineHeight: len + 'px',
-                        fontSize: (len * 30 / 100) + 'px'
-                    });
+                        fontSize: (len * perc) + 'px'
+                    };
+
+                    if (file.style.borderColor === "gitHub") {
+                        let ext = file.name.split('.')[file.name.split('.').length - 1];
+                        if (GitHubColors[ext] && GitHubColors[ext].color) {
+                            file.style.borderColor = GitHubColors[ext].color;
+                        } else {
+                            file.style.borderColor = '#ccc';
+                        }
+                    }
                 }
                 return file;
             }
@@ -105,16 +111,27 @@ var app = new Vue({
             console.log('retrieving files', sha);
             this.pending = true;
 
-            this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(result => {
-                this.currentFiles = result.body;
+            this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(filesHTTP => {
+                if (!GitHubColors) {
+                    return this.$http.get(apiUrl + '/GitHubColors/ext').then(colorsHTTP => {
+                        GitHubColors = colorsHTTP.body;
+                        return setCurrentFiles.call(this, filesHTTP);
+                    });
+                } else {
+                    return setCurrentFiles.call(this, filesHTTP);
+                }
 
+            }).catch(function (err) {
+                console.error(err);
+                this.pending = false;
+            });
+
+            function setCurrentFiles(filesHTTP) {
+                this.currentFiles = filesHTTP.body;
                 this.$nextTick(function () {
                     this.pending = false;
                 })
-            }).catch(function (err) {
-                console.log(err);
-                this.pending = false;
-            });
+            }
         }
     },
     methods: {
@@ -137,8 +154,8 @@ var app = new Vue({
 
             this.repoInfos = { owner, repo };
 
-            this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(result => {
-                this.commits = result.body;
+            this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(commitsHTTP => {
+                this.commits = commitsHTTP.body;
                 this.repoNotExist = false;
             }).catch(function (err) {
                 console.log(err);
@@ -160,6 +177,7 @@ var app = new Vue({
                         self.commitSelected = self.reversedCommitsSha[index];
                         index++;
                         if (index < self.reversedCommitsSha.length) advance();
+                        else self.stopTimeline();
                     }
                 }, self.waitTime * 1000);
             }
