@@ -2,18 +2,23 @@ var apiUrl = 'http://localhost:3000/api';
 var GitHubColors = null;
 
 ///COMPONENTS///////////////////////////////
-Vue.component('file-component', {
+Vue.component('files', {
     props: ['file'],
     template:
-    '<div v-if="file.type === 3" class="file" :style="file.style">' +
+    '<div v-if="file.type === 3" class="file" :style="file.style" @click="display(file)">' +
     '      {{file.size}} ' +
     '  </div> ' +
     '  <div v-else class="folder" :style="file.style"> ' +
     '     {{file.name}}' +
     '      <div v-for="child in file.childs" :title="child.path">' +
-    '          <file-component :file="child"></file-component>' +
+    '          <files :file="child" @display="display"></files>' +
     '      </div>' +
     '  </div>',
+    methods: {
+        display: function (file) {
+            this.$emit('display', file);
+        }
+    }
 });
 ///////////////////////////////////////////
 
@@ -30,6 +35,7 @@ var app = new Vue({
         commitSelected: null,
         commits: [],
         currentFiles: [],
+        selectedFile: null,
         minSize: 25,
         maxSize: 100,
         fileColor: "gitHub"
@@ -122,6 +128,24 @@ var app = new Vue({
 
             function setCurrentFiles(filesHTTP) {
                 this.currentFiles = filesHTTP.body;
+
+                if (this.selectedFile) {
+                    let selected = findDeep(this.currentFiles, function (file) {
+                        return file.path === this.selectedFile.path;
+                    }, this);
+
+                    if (selected) {
+                        this.displayFile(selected);
+                    } else {
+                        //use a fake file to display 'no file' message
+                        this.displayFile({
+                            name: this.selectedFile.name,
+                            path: this.selectedFile.path,
+                            size: -1,
+                            content: "Le fichier n'existe pas"
+                        });
+                    }
+                }
             }
         }
     },
@@ -157,6 +181,26 @@ var app = new Vue({
                 this.pending = false;
             });
         },
+        displayFile: function (file) {
+            if (!file) return;
+
+            if (file.size === -1) {
+                file.highlighted = {
+                    value: file.content,
+                    language: ""
+                };
+            } else {
+                //try set language based on file extension
+                try {
+                    let ext = file.name.split('.')[file.name.split('.').length - 1];
+                    file.highlighted = hljs.highlight(ext, file.content);
+                } catch (e){
+                    //if fail use auto highlight
+                    file.highlighted = hljs.highlightAuto(file.content);
+                }
+            }
+            this.selectedFile = file;
+        },
         timeline: function () {
             var self = this, index = 1;
             this.commitSelected = this.reversedCommitsSha[0];
@@ -182,4 +226,15 @@ var app = new Vue({
             this.timeoutId = null;
         }
     }
-}) 
+})
+
+
+//UTILITIES///////////////////////////////////////////
+var findDeep = function (list, predicate, context) {
+    for (let i = 0; i < list.length; i++) {
+        if (predicate.call(context, list[i])) return list[i];
+        else if (list[i].childs) return findDeep(list[i].childs, predicate, context);
+    }
+
+    return undefined;
+}

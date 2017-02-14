@@ -73,4 +73,20 @@ body{
     text-align: center;
     border-width: 3px;
     border-style: solid;
+    cursor: pointer;
+}
+/*******************************************/
+
+/*FILE DETAILS******************************/
+#file-details > .header{
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+}
+#file-details > .header > .close{
+    cursor: pointer;
+}
+
+#file-details > pre {
+    margin: 0px;
 }

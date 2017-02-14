@@ -62,7 +62,8 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
                     }
                     if (entry.isBlob()) {
                         promises.push(entry.getBlob().then(function (blob) {
-                            file.size = blob.content().toString().split("\n").length;
+                            file.content = blob.content().toString();
+                            file.size = file.content.split("\n").length;
                         }));
                     }
                     files.push(file);
