@@ -1,26 +1,5 @@
 var apiUrl = 'http://localhost:3000/api';
-var GitHubColors = null;
-
-///COMPONENTS///////////////////////////////
-Vue.component('files', {
-    props: ['file'],
-    template:
-    '<div v-if="file.type === 3" class="file" :style="file.style" @click="display(file)">' +
-    '      {{file.size}} ' +
-    '  </div> ' +
-    '  <div v-else class="folder" :style="file.style"> ' +
-    '     {{file.name}}' +
-    '      <div v-for="child in file.childs" :title="child.path">' +
-    '          <files :file="child" @display="display"></files>' +
-    '      </div>' +
-    '  </div>',
-    methods: {
-        display: function (file) {
-            this.$emit('display', file);
-        }
-    }
-});
-///////////////////////////////////////////
+var GitHubColorsP = null;
 
 /////VUE/////////////////////////////////////////
 var app = new Vue({
@@ -40,24 +19,26 @@ var app = new Vue({
         maxSize: 100,
         fileColor: "gitHub"
     },
+    created: function(){
+        GitHubColorsP = this.$http.get(apiUrl + '/GitHubColors/ext');
+        GitHubColorsP.catch(console.error);
+    },
     computed: {
+        svgWidth: function () {
+            return window.innerWidth;
+        },
+        svgHeight: function () {
+            return window.innerHeight - document.getElementById('nav').height;
+        },
         reversedCommitsSha: function () {
             return this.commits.map(function (com) {
                 return com.sha;
             }).reverse();
         },
         currentFilesStyled: function () {
-            let filesStyled = [];
-            let max = _.max(this.currentFiles, getSize).size;
-            let min = _.min(this.currentFiles, getSize).size;
-            let distance = this.maxSize - this.minSize;
-
-            if (max === min) max++; //avoir error when only one file
-
             function getSize(file) {
                 return file.size;
             }
-
             function calcStyle(file) {
                 if (file.type === 3) {
                     let len = this.minSize + (((this.maxSize - this.minSize) * (file.size - min)) / (max - min));
@@ -71,18 +52,19 @@ var app = new Vue({
                         fontSize: (len * perc) + 'px'
                     };
 
-                    if (file.style.borderColor === "gitHub") {
-                        let ext = file.name.split('.')[file.name.split('.').length - 1];
-                        if (GitHubColors[ext] && GitHubColors[ext].color) {
-                            file.style.borderColor = GitHubColors[ext].color;
-                        } else {
-                            file.style.borderColor = '#ccc';
+                    GitHubColorsP.then(gitHubColors => {
+                        if (file.style.borderColor === "gitHub") {
+                            let ext = file.name.split('.')[file.name.split('.').length - 1];
+                            if (gitHubColors[ext] && gitHubColors[ext].color) {
+                                file.style.borderColor = gitHubColors[ext].color;
+                            } else {
+                                file.style.borderColor = '#ccc';
+                            }
                         }
-                    }
+                    })
                 }
                 return file;
             }
-
             function findParent(folders, files, index) {
                 var parent = files.find(function (file) {
                     return file.name === folders[index];
@@ -95,6 +77,11 @@ var app = new Vue({
                 }
             }
 
+            let filesStyled = [];
+            let max = Math.max(_.pluck(this.currentFiles), getSize);
+            let min = Math.min(_.pluck(this.currentFiles), getSize);
+            let distance = this.maxSize - this.minSize;
+            if (max === min) max++; //avoid error when only one file
             this.currentFiles.forEach(function (file) {
                 let folders = file.path.split('\\');
                 if (folders.length <= 1) {
@@ -111,42 +98,85 @@ var app = new Vue({
     },
     watch: {
         commitSelected: function (sha) {
-            if (!sha || !this.repoInfos) return;
-
-            this.$http.get(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files').then(filesHTTP => {
-                if (!GitHubColors) {
-                    return this.$http.get(apiUrl + '/GitHubColors/ext').then(colorsHTTP => {
-                        GitHubColors = colorsHTTP.body;
-                        return setCurrentFiles.call(this, filesHTTP);
-                    });
-                } else {
-                    return setCurrentFiles.call(this, filesHTTP);
-                }
-            }).catch(function (err) {
-                console.error(err);
-            });
-
-            function setCurrentFiles(filesHTTP) {
-                this.currentFiles = filesHTTP.body;
-
-                if (this.selectedFile) {
-                    let selected = findDeep(this.currentFiles, function (file) {
-                        return file.path === this.selectedFile.path;
-                    }, this);
-
-                    if (selected) {
-                        this.displayFile(selected);
-                    } else {
-                        //use a fake file to display 'no file' message
-                        this.displayFile({
-                            name: this.selectedFile.name,
-                            path: this.selectedFile.path,
-                            size: -1,
-                            content: "Le fichier n'existe pas"
-                        });
+            var displayGraph = url => {
+                var svg = d3.select("svg"),
+                    margin = 20,
+                    diameter = +svg.attr("width"),
+                    g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+            
+                var color = d3.scaleLinear()
+                    .domain([-1, 5])
+                    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                    .interpolate(d3.interpolateHcl);
+            
+                var pack = d3.pack()
+                    .size([diameter - margin, diameter - margin])
+                    .padding(2);
+            
+                d3.json(url, function (error, root) {
+                    if (error) throw error;
+                    console.log(root);
+            
+                    root = d3.hierarchy(root)
+                        .sum(function (d) { return d.size; })
+                        .sort(function (a, b) { return b.value - a.value; });
+            
+                    var focus = root,
+                        nodes = pack(root).descendants(),
+                        view;
+            
+                    var circle = g.selectAll("circle")
+                        .data(nodes)
+                        .enter().append("circle")
+                        .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+                        .style("fill", function (d) { return d.children ? color(d.depth) : null; })
+                        .on("click", function (d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+            
+                    var text = g.selectAll("text")
+                        .data(nodes)
+                        .enter().append("text")
+                        .attr("class", "label")
+                        .style("fill-opacity", function (d) { return d.parent === root ? 1 : 0; })
+                        .style("display", function (d) { return d.parent === root ? "inline" : "none"; })
+                        .text(function (d) { return d.data.name; });
+            
+                    var node = g.selectAll("circle,text");
+            
+                    svg
+                        .style("background", color(-1))
+                        .on("click", function () { zoom(root); });
+            
+                    zoomTo([root.x, root.y, root.r * 2 + margin]);
+            
+                    function zoom(d) {
+                        var focus0 = focus; focus = d;
+            
+                        var transition = d3.transition()
+                            .duration(d3.event.altKey ? 7500 : 750)
+                            .tween("zoom", function (d) {
+                                var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                                return function (t) { zoomTo(i(t)); };
+                            });
+            
+                        transition.selectAll("text")
+                            .filter(function (d) { return d.parent === focus || this.style.display === "inline"; })
+                            .style("fill-opacity", function (d) { return d.parent === focus ? 1 : 0; })
+                            .on("start", function (d) { if (d.parent === focus) this.style.display = "inline"; })
+                            .on("end", function (d) { if (d.parent !== focus) this.style.display = "none"; });
                     }
-                }
+            
+                    function zoomTo(v) {
+                        var k = diameter / v[2]; view = v;
+                        node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+                        circle.attr("r", function (d) { return d.r * k; });
+                    }
+                });
             }
+
+            if (!sha || !this.repoInfos) return;
+            displayGraph(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files', (err) => {
+                console.log(err);
+            });
         }
     },
     methods: {
@@ -178,7 +208,8 @@ var app = new Vue({
                 this.commits = commitsHTTP.body;
                 this.repoNotExist = false;
                 this.pending = false;
-            }).catch(function (err) {
+                //TODO MESSAGE OR SOMETHING
+            }).catch(err => {
                 console.error(err);
                 this.repoNotExist = true;
                 this.pending = false;
@@ -197,7 +228,7 @@ var app = new Vue({
                 try {
                     let ext = file.name.split('.')[file.name.split('.').length - 1];
                     file.highlighted = hljs.highlight(ext, file.content);
-                } catch (e){
+                } catch (e) {
                     //if fail use auto highlight
                     file.highlighted = hljs.highlightAuto(file.content);
                 }
@@ -230,14 +261,3 @@ var app = new Vue({
         }
     }
 })
-
-
-//UTILITIES///////////////////////////////////////////
-var findDeep = function (list, predicate, context) {
-    for (let i = 0; i < list.length; i++) {
-        if (predicate.call(context, list[i])) return list[i];
-        else if (list[i].childs) return findDeep(list[i].childs, predicate, context);
-    }
-
-    return undefined;
-}

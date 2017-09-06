@@ -4,7 +4,7 @@
     <script src="vue-resource/dist/vue-resource.min.js"></script>
     <script src="highlightjs/highlight.pack.min.js"></script>
     <script src="underscore/underscore-min.js"></script>
-
+    <script src="https://d3js.org/d3.v4.min.js"></script>
 
     <link rel="stylesheet" href="highlightjs/styles/atom-one-dark.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
@@ -38,11 +38,7 @@
                 </div>
                 <pre><code class="hljs" :class="selectedFile.highlighted.language"><div v-html="selectedFile.highlighted.value"></div></code></pre>
             </div>
-            <div v-else id="file-container" key="files">
-                <div v-for="file in currentFilesStyled" :title="file.path">
-                    <files :file="file" @display="displayFile"></files>
-                </div>
-            </div>
+            <svg v-else id="graph"></svg>
         </transition>
     </div>
     <script src="js/main.js"></script>
