@@ -38,7 +38,7 @@
                 </div>
                 <pre><code class="hljs" :class="selectedFile.highlighted.language"><div v-html="selectedFile.highlighted.value"></div></code></pre>
             </div>
-            <svg v-else id="graph"></svg>
+            <svg v-else :width="svgWidth" :height="svgHeight"></svg>
         </transition>
     </div>
     <script src="js/main.js"></script>

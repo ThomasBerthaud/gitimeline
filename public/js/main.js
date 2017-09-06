@@ -19,7 +19,7 @@ var app = new Vue({
         maxSize: 100,
         fileColor: "gitHub"
     },
-    created: function(){
+    created: function () {
         GitHubColorsP = this.$http.get(apiUrl + '/GitHubColors/ext');
         GitHubColorsP.catch(console.error);
     },
@@ -28,7 +28,7 @@ var app = new Vue({
             return window.innerWidth;
         },
         svgHeight: function () {
-            return window.innerHeight - document.getElementById('nav').height;
+            return window.innerHeight - document.getElementById('nav').offsetHeight;
         },
         reversedCommitsSha: function () {
             return this.commits.map(function (com) {
@@ -98,94 +98,94 @@ var app = new Vue({
     },
     watch: {
         commitSelected: function (sha) {
-            var displayGraph = url => {
-                var svg = d3.select("svg"),
-                    margin = 20,
-                    diameter = +svg.attr("width"),
-                    g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
-            
-                var color = d3.scaleLinear()
-                    .domain([-1, 5])
-                    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-                    .interpolate(d3.interpolateHcl);
-            
-                var pack = d3.pack()
-                    .size([diameter - margin, diameter - margin])
-                    .padding(2);
-            
-                d3.json(url, function (error, root) {
-                    if (error) throw error;
-                    console.log(root);
-            
-                    root = d3.hierarchy(root)
-                        .sum(function (d) { return d.size; })
-                        .sort(function (a, b) { return b.value - a.value; });
-            
-                    var focus = root,
-                        nodes = pack(root).descendants(),
-                        view;
-            
-                    var circle = g.selectAll("circle")
-                        .data(nodes)
-                        .enter().append("circle")
-                        .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-                        .style("fill", function (d) { return d.children ? color(d.depth) : null; })
-                        .on("click", function (d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
-            
-                    var text = g.selectAll("text")
-                        .data(nodes)
-                        .enter().append("text")
-                        .attr("class", "label")
-                        .style("fill-opacity", function (d) { return d.parent === root ? 1 : 0; })
-                        .style("display", function (d) { return d.parent === root ? "inline" : "none"; })
-                        .text(function (d) { return d.data.name; });
-            
-                    var node = g.selectAll("circle,text");
-            
-                    svg
-                        .style("background", color(-1))
-                        .on("click", function () { zoom(root); });
-            
-                    zoomTo([root.x, root.y, root.r * 2 + margin]);
-            
-                    function zoom(d) {
-                        var focus0 = focus; focus = d;
-            
-                        var transition = d3.transition()
-                            .duration(d3.event.altKey ? 7500 : 750)
-                            .tween("zoom", function (d) {
-                                var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-                                return function (t) { zoomTo(i(t)); };
-                            });
-            
-                        transition.selectAll("text")
-                            .filter(function (d) { return d.parent === focus || this.style.display === "inline"; })
-                            .style("fill-opacity", function (d) { return d.parent === focus ? 1 : 0; })
-                            .on("start", function (d) { if (d.parent === focus) this.style.display = "inline"; })
-                            .on("end", function (d) { if (d.parent !== focus) this.style.display = "none"; });
-                    }
-            
-                    function zoomTo(v) {
-                        var k = diameter / v[2]; view = v;
-                        node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-                        circle.attr("r", function (d) { return d.r * k; });
-                    }
-                });
-            }
-
             if (!sha || !this.repoInfos) return;
-            displayGraph(apiUrl + '/repos/' + this.repoInfos.owner + '/' + this.repoInfos.repo + '/commits/' + sha + '/files', (err) => {
-                console.log(err);
+
+            let filesTreeUrl = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${sha}/files`;
+
+            let svg = d3.select("svg"),
+                margin = 20,
+                width = +(svg.style("width").slice(0, -2)), 
+                height = +(svg.style("height").slice(0, -2)), 
+                diameter = width > height ? height : width;
+            
+            svg.selectAll("*").remove();
+            //TODO make a transition
+            
+            let g = svg.append("g").attr("transform", "translate(" + ((width-diameter)/2 + diameter / 2) + "," + ((height-diameter)/2 + diameter / 2) + ")");
+
+            let color = d3.scaleLinear()
+                .domain([-1, 5])
+                .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+                .interpolate(d3.interpolateHcl);
+
+            let pack = d3.pack()
+                .size([diameter - margin, diameter - margin])
+                .padding(2);
+
+            d3.json(filesTreeUrl, function (error, root) {
+                if (error) throw error;
+                console.log(root);
+
+                root = d3.hierarchy(root)
+                    .sum(function (d) { return d.size; })
+                    .sort(function (a, b) { return b.name - a.name; });
+
+                let focus = root,
+                    nodes = pack(root).descendants(),
+                    view;
+
+                let circle = g.selectAll("circle")
+                    .data(nodes)
+                    .enter().append("circle")
+                    .attr("class", function (d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
+                    .style("fill", function (d) { return d.children ? color(d.depth) : null; })
+                    .on("click", function (d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+
+                let text = g.selectAll("text")
+                    .data(nodes)
+                    .enter().append("text")
+                    .attr("class", "label")
+                    .style("fill-opacity", function (d) { return d.parent === root ? 1 : 0; })
+                    .style("display", function (d) { return d.parent === root ? "inline" : "none"; })
+                    .text(function (d) { return d.data.name; });
+
+                let node = g.selectAll("circle,text");
+
+                svg.on("click", function () { zoom(root); });
+
+                zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+                function zoom(d) {
+                    let focus0 = focus; focus = d;
+
+                    let transition = d3.transition()
+                        .duration(d3.event.altKey ? 7500 : 750)
+                        .tween("zoom", function (d) {
+                            let i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                            return function (t) { zoomTo(i(t)); };
+                        });
+
+                    transition.selectAll("text")
+                        .filter(function (d) { return d.parent === focus || this.style.display === "inline"; })
+                        .style("fill-opacity", function (d) { return d.parent === focus ? 1 : 0; })
+                        .on("start", function (d) { if (d.parent === focus) this.style.display = "inline"; })
+                        .on("end", function (d) { if (d.parent !== focus) this.style.display = "none"; });
+                }
+
+                function zoomTo(v) {
+                    let k = diameter / v[2]; view = v;
+                    node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+                    circle.attr("r", function (d) { return d.r * k; });
+                }
             });
         }
     },
     methods: {
         trim: function (string) {
-            var length = 10;
+            let length = 10;
             return string.length > length ?
                 string.substring(0, length - 3) + "..." :
                 string;
-
         },
         getHistory: function () {
             if (!this.repoUrl) {
@@ -193,18 +193,18 @@ var app = new Vue({
                 return;
             }
 
-            var infos = this.repoUrl.split('/');
-            var owner = infos.slice(-2, -1);
-            var repo = infos.slice(-1);
-
+            let infos = this.repoUrl.split('/');
+            let owner = infos.slice(-2, -1);
+            let repo = infos.slice(-1);
+            let commitsUrl = `${apiUrl}/repos/${owner}/${repo}/commits`;
+            
             this.repoInfos = { owner, repo };
-
             this.pending = true;
             this.commitSelected = null;
             this.currentFiles = [];
             this.selectedFile = null;
 
-            this.$http.get(apiUrl + '/repos/' + owner + '/' + repo + '/commits/history').then(commitsHTTP => {
+            this.$http.get(commitsUrl).then(commitsHTTP => {
                 this.commits = commitsHTTP.body;
                 this.repoNotExist = false;
                 this.pending = false;
