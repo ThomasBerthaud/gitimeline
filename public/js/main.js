@@ -38,19 +38,19 @@ var app = new Vue({
     },
     watch: {
         commitSelected: function (sha) {
-            let calcColor = name => {
-                if (name && gitHubColors) {
-                    let ext = name.split('.')[name.split('.').length - 1];
-                    if (gitHubColors[ext] && gitHubColors[ext].color) {
-                        return gitHubColors[ext].color;
-                    }
-                }
-                return "#ccc";
-            }
-
             if (!sha || !this.repoInfos) return;
-
-            let filesTreeUrl = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${sha}/files`;
+            if (this.selectedFile) {
+                this.displayFile(this.selectedFile);
+            } else {
+                this.displayGraph();
+            }
+        }
+    },
+    methods: {
+        displayGraph: function () {
+            this.selectedFile = null;
+            let self = this;
+            let filesTreeUrl = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files`;
             let svg = d3.select("svg"),
                 margin = 20,
                 width = +(svg.style("width").slice(0, -2)),
@@ -59,7 +59,6 @@ var app = new Vue({
 
             svg.selectAll("*").remove();
             //TODO make a transition
-
             let g = svg.append("g").attr("transform", "translate(" + ((width - diameter) / 2 + diameter / 2) + "," + ((height - diameter) / 2 + diameter / 2) + ")");
 
             let color = d3.scaleLinear()
@@ -103,6 +102,11 @@ var app = new Vue({
 
                 zoomTo([root.x, root.y, root.r * 2 + margin]);
 
+                function zoomTo(v) {
+                    let k = diameter / v[2]; view = v;
+                    node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
+                    circle.attr("r", function (d) { return d.r * k; });
+                }
                 function zoom(d) {
                     if (d.children) {
                         let focus0 = focus; focus = d;
@@ -120,19 +124,37 @@ var app = new Vue({
                             .on("start", function (d) { if (d.parent === focus) this.style.display = "inline"; })
                             .on("end", function (d) { if (d.parent !== focus) this.style.display = "none"; });
                     } else {
-                        displayFile(d.data.name);
+                        self.displayFile(d.data);
                     }
                 }
-
-                function zoomTo(v) {
-                    let k = diameter / v[2]; view = v;
-                    node.attr("transform", function (d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-                    circle.attr("r", function (d) { return d.r * k; });
-                }
             });
-        }
-    },
-    methods: {
+        },
+        displayFile: function (file) {
+            let url = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files/${file.path}`;
+            this.$http.get(url).then(request => {
+                file = _.extend(request.body, file);
+                console.log(file);
+                //try set language based on file extension
+                try {
+                    let ext = file.name.split('.')[file.name.split('.').length - 1];
+                    file.highlighted = hljs.highlight(ext, file.content);
+                } catch (e) {
+                    //if fail use auto highlight
+                    file.highlighted = hljs.highlightAuto(file.content);
+                }
+                console.log(file)
+                this.selectedFile = file;
+            }).catch(err => {
+                let errorMessage = "Erreur : Ce fichier n'existe pas !";
+                this.selectedFile = {
+                    name: file.name,
+                    path: file.path,
+                    size: 0,
+                    content: errorMessage,
+                    highlighted: {value: errorMessage}
+                }
+            })
+        },
         trim: function (string) {
             let length = 10;
             return string.length > length ?
@@ -167,26 +189,6 @@ var app = new Vue({
                 this.pending = false;
             });
         },
-        displayFile: function (fileName) {
-            this.$http.get('').then(file => {
-                if (file.size === -1) {
-                    file.highlighted = {
-                        value: file.content,
-                        language: ""
-                    };
-                } else {
-                    //try set language based on file extension
-                    try {
-                        let ext = file.name.split('.')[file.name.split('.').length - 1];
-                        file.highlighted = hljs.highlight(ext, file.content);
-                    } catch (e) {
-                        //if fail use auto highlight
-                        file.highlighted = hljs.highlightAuto(file.content);
-                    }
-                }
-                this.selectedFile = file;
-            })
-        },
         timeline: function () {
             var self = this, index = 1;
             this.commitSelected = this.reversedCommitsSha[0];
@@ -213,3 +215,14 @@ var app = new Vue({
         }
     }
 })
+
+/////////////////UTILITIES//////////////
+function calcColor(name) {
+    if (name && gitHubColors) {
+        let ext = name.split('.')[name.split('.').length - 1];
+        if (gitHubColors[ext] && gitHubColors[ext].color) {
+            return gitHubColors[ext].color;
+        }
+    }
+    return "#ccc";
+}

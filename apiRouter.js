@@ -1,6 +1,7 @@
 var path = require('path');
 var Git = require('nodegit');
 var GithubColor = require('github-colors');
+var _ = require('underscore');
 var router = require('express').Router();
 
 router.get('/GithubColors/ext(/:extension)?', function (req, res) {
@@ -49,34 +50,33 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
     getGitRepo(req.params).then(function (repo) {
         return repo.getCommit(req.params.sha).then(function (commit) {
             return commit.getTree().then(function (tree) {
-                var filesTree = {name:req.params.repoName, children:[]},
-                    promises = [], 
+                var filesTree = { name: req.params.repoName, children: [] },
+                    promises = [],
                     walker = tree.walk(false);
 
                 walker.on('entry', function (entry) {
-                    let node, 
+                    let node,
                         hook = filesTree.children;
-                    if(entry.isFile()){
-                        node = {name: entry.name(), size: 0};
+                    if (entry.isFile()) {
+                        node = {path: entry.path(), name: entry.name(), size: 0 };
                         if (entry.isBlob()) {
                             promises.push(entry.getBlob().then(function (blob) {
                                 node.size = blob.content().toString().split("\n").length;
                             }));
                         }
-                    }else {
-                        node = {name:entry.name(), children:[]}
+                    } else {
+                        node = { name: entry.name(), children: [] }
                     }
-                    entry.path().split('\\').slice(0,-1).forEach(folder=>{
-                        console.log(folder);
-                        hook = hook.find(child=>child.name===folder).children;
+                    entry.path().split('\\').slice(0, -1).forEach(folder => {
+                        hook = hook.find(child => child.name === folder).children;
                     })
                     hook.push(node);
                 })
 
                 walker.on('end', function () {
-                    Promise.all(promises).then(()=>{
+                    Promise.all(promises).then(() => {
                         res.status(200).send(filesTree)
-                    }).catch(error=>{
+                    }).catch(error => {
                         console.log(error)
                         res.status(500).send();
                     })
@@ -91,22 +91,35 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
     })
 })
 
-router.get('/repos/:owner/:repoName/commits/:sha/files/:oid', function(req, res){
-    // if (entry.isBlob()) {
-    //     promises.push(entry.getBlob().then(function (blob) {
-    //         file.content = blob.content().toString();
-    //         file.size = file.content.split("\n").length;
-    //     }));
-    // }
+router.get('/repos/:owner/:repoName/commits/:sha/files/:path', function (req, res) {
+    getGitRepo(req.params).then(function (repo) {
+        return repo.getCommit(req.params.sha).then(function (commit) {
+            return commit.getTree().then(function (tree) {
+                return tree.entryByPath(req.params.path.replace(/\\/g, '/')).then(entry => {
+                    if (entry && entry.isBlob()) {
+                        entry.parent = tree;
+                        return entry.getBlob().then(function (blob) {
+                            res.status(200).send({ content: blob.content().toString() });
+                        })
+                    } else {
+                        res.status(404).send();
+                    }
+                })
+            })
+        });
+    }).catch(function (err) {
+        console.log(err);
+        res.status(404).send();
+    })
 })
 
 var getGitRepo = function (params) {
-    var {owner, repoName} = params;
+    var { owner, repoName } = params;
     var pathToRepo = path.join(__dirname, `repos/${owner}_${repoName}`);
     var cloneOptions = {
         fetchOpts: {
             callbacks: {
-                transferProgress: function(log){
+                transferProgress: function (log) {
                     //console.log(`transfer : ${log.receivedObjects()} / ${log.totalObjects()} (${log.indexedObjects()})`);
 
                 }
