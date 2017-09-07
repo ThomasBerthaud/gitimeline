@@ -34,7 +34,7 @@
             <div v-if="selectedFile" id="file-details" key="details">
                 <div class="header">
                     {{selectedFile.name}}
-                    <span class="close" @click="selectedFile = null"><i class="fa fa-times" aria-hidden="true"></i></span>
+                    <span class="close" @click="displayGraph"><i class="fa fa-times" aria-hidden="true"></i></span>
                 </div>
                 <pre><code class="hljs" :class="selectedFile.highlighted.language"><div v-html="selectedFile.highlighted.value"></div></code></pre>
             </div>

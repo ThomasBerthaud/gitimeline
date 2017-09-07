@@ -55,9 +55,9 @@ var app = new Vue({
                 margin = 20,
                 width = +(svg.style("width").slice(0, -2)),
                 height = +(svg.style("height").slice(0, -2)),
-                diameter = width > height ? height : width;
+                diameter = width > height ? height : width,
+                toDelete = svg.select("g");
 
-            svg.selectAll("*").remove();
             //TODO make a transition
             let g = svg.append("g").attr("transform", "translate(" + ((width - diameter) / 2 + diameter / 2) + "," + ((height - diameter) / 2 + diameter / 2) + ")");
 
@@ -101,6 +101,8 @@ var app = new Vue({
                 svg.on("click", function () { zoom(root); });
 
                 zoomTo([root.x, root.y, root.r * 2 + margin]);
+
+                toDelete.remove();
 
                 function zoomTo(v) {
                     let k = diameter / v[2]; view = v;
