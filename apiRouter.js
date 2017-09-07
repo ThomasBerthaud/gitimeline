@@ -58,7 +58,7 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
                     let node,
                         hook = filesTree.children;
                     if (entry.isFile()) {
-                        node = {path: entry.path(), name: entry.name(), size: 0 };
+                        node = { path: entry.path(), name: entry.name(), size: 0 };
                         if (entry.isBlob()) {
                             promises.push(entry.getBlob().then(function (blob) {
                                 node.size = blob.content().toString().split("\n").length;
@@ -94,17 +94,14 @@ router.get('/repos/:owner/:repoName/commits/:sha/files', function (req, res) {
 router.get('/repos/:owner/:repoName/commits/:sha/files/:path', function (req, res) {
     getGitRepo(req.params).then(function (repo) {
         return repo.getCommit(req.params.sha).then(function (commit) {
-            return commit.getTree().then(function (tree) {
-                return tree.entryByPath(req.params.path.replace(/\\/g, '/')).then(entry => {
-                    if (entry && entry.isBlob()) {
-                        entry.parent = tree;
-                        return entry.getBlob().then(function (blob) {
-                            res.status(200).send({ content: blob.content().toString() });
-                        })
-                    } else {
-                        res.status(404).send();
-                    }
-                })
+            return commit.getEntry(req.params.path.replace(/\\/g, '/')).then(function (entry) {
+                if (entry && entry.isBlob()) {
+                    return entry.getBlob().then(function (blob) {
+                        res.status(200).send({ content: blob.content().toString() });
+                    })
+                } else {
+                    res.status(404).send();
+                }
             })
         });
     }).catch(function (err) {

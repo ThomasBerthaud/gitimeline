@@ -31,9 +31,7 @@ var app = new Vue({
             return window.innerHeight - document.getElementById('nav').offsetHeight;
         },
         reversedCommitsSha: function () {
-            return this.commits.map(function (com) {
-                return com.sha;
-            }).reverse();
+            return this.commits.map(com => com.sha).reverse();
         },
     },
     watch: {
@@ -58,7 +56,6 @@ var app = new Vue({
                 diameter = width > height ? height : width,
                 toDelete = svg.select("g");
 
-            //TODO make a transition
             let g = svg.append("g").attr("transform", "translate(" + ((width - diameter) / 2 + diameter / 2) + "," + ((height - diameter) / 2 + diameter / 2) + ")");
 
             let color = d3.scaleLinear()
@@ -131,6 +128,9 @@ var app = new Vue({
                 }
             });
         },
+        hideGraph: function(){
+            d3.select('svg').select('g').remove();
+        },
         displayFile: function (file) {
             let url = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files/${file.path}`;
             this.$http.get(url).then(request => {
@@ -143,10 +143,9 @@ var app = new Vue({
                     //if fail use auto highlight
                     file.highlighted = hljs.highlightAuto(file.content);
                 }
-                console.log(file)
                 this.selectedFile = file;
             }).catch(err => {
-                let errorMessage = "Erreur : Ce fichier n'existe pas !";
+                let errorMessage = "Ce fichier n'a pas encore été crée ou a été supprimé !";
                 this.selectedFile = {
                     name: file.name,
                     path: file.path,
@@ -163,10 +162,10 @@ var app = new Vue({
                 string;
         },
         getHistory: function () {
-            if (!this.repoUrl) {
-                console.log('need to give a repo url');
-                return;
-            }
+            if (!this.repoUrl) return;
+
+            this.selectedFile = null;
+            this.hideGraph();
 
             let infos = this.repoUrl.split('/');
             let owner = infos.slice(-2, -1);
@@ -179,11 +178,11 @@ var app = new Vue({
             this.currentFiles = [];
             this.selectedFile = null;
 
+            //TODO MESSAGE OR SOMETHING WHEN PENDING
             this.$http.get(commitsUrl).then(commitsHTTP => {
                 this.commits = commitsHTTP.body;
                 this.repoNotExist = false;
                 this.pending = false;
-                //TODO MESSAGE OR SOMETHING
             }).catch(err => {
                 console.error(err);
                 this.repoNotExist = true;
