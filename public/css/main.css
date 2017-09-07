@@ -49,34 +49,6 @@ body{
 }
 /******************************************/
 
-/*CONTENT**********************************/
-#file-container{
-    margin: 8px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.folder {
-    padding: 5px;
-    margin: 2px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    border: 1px solid black;
-    border-radius: 5px;
-}
-
-.file {
-    margin: 5px;
-    border-radius: 50%;
-    text-align: center;
-    border-width: 3px;
-    border-style: solid;
-    cursor: pointer;
-}
-/*******************************************/
-
 /*FILE DETAILS******************************/
 #file-details > .header{
     display: flex;
@@ -91,6 +63,32 @@ body{
     margin: 0px;
 }
 /***************************************************/
+
+/*D3 GRAPH*******************************************/
+.node {
+    cursor: pointer;
+}
+  
+.node:hover {
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+
+.node--leaf {
+    fill: white;
+}
+
+.label {
+    font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.label,
+.node--root{
+    pointer-events: none;
+}
+/****************************************************/
 
 /*TRANSITIONS****************************************/
 .fade-enter-active, .fade-leave-active {

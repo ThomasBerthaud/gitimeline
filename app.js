@@ -2,7 +2,6 @@ var express = require('express')
 var path = require('path')
 var morgan = require('morgan')
 var app = express()
-
 var apiRouter = require('./apiRouter')
 
 app.use(morgan('tiny'))
