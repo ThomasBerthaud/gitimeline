@@ -132,8 +132,7 @@ var app = new Vue({
         displayFile: function (file) {
             let url = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files/${file.path}`;
             this.$http.get(url).then(request => {
-                file = _.extend(request.body, file);
-                console.log(file);
+                file = _.extend(file, request.body);
                 //try set language based on file extension
                 try {
                     let ext = file.name.split('.')[file.name.split('.').length - 1];
