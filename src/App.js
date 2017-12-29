@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import config from './config.json';
 import History from './history';
+import Commit from './commit';
 
 class App extends Component {
     constructor(props) {
@@ -11,6 +12,7 @@ class App extends Component {
 
         this.getRepo = this.getRepo.bind(this);
         this.onUrlChange = this.onUrlChange.bind(this);
+        this.selectCommit = this.selectCommit.bind(this);
     }
 
     onUrlChange(event) {
@@ -19,8 +21,13 @@ class App extends Component {
         });
     }
 
+    selectCommit(commit) {
+        this.setState({
+            selectedCommit: commit
+        });
+    }
+
     render() {
-        const isRepoDl = this.state.commits;
         return (
             <div>
                 <div id="nav">
@@ -38,10 +45,22 @@ class App extends Component {
                     </button>
                 </div>
                 <div id="content">
-                    {isRepoDl && <History commits={this.state.commits} />}
+                    {this.getContent()}
                 </div>
             </div>
         );
+    }
+
+    getContent() {
+        const isRepoDl = this.state.commits;
+        const isSelectedRepo = this.state.selectedCommit;
+        if(isSelectedRepo) {
+            return <Commit infos={this.state.selectedCommit} />
+        }else if(isRepoDl) {
+            return <History commits={this.state.commits} onSelectedCommit={this.selectCommit}/>
+        }
+
+        return false;
     }
 
     getRepo() {
@@ -53,13 +72,12 @@ class App extends Component {
         let commitsUrl = `${config.apiUrl}/repos/${owner}/${repo}/commits`;
 
         axios.get(commitsUrl).then(res => {
-            console.log(res);
             this.setState({
                 commits: res.data
             });
         }).catch(err => {
-            console.log(err);
-        })
+            console.error(err);
+        });
     }
 }
 

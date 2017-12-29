@@ -8,9 +8,10 @@ class History extends Component {
     }
 
     render() {
-        console.log(this.props.commits);
         const commits = this.props.commits.map(cm => {
-            return <li key={cm.sha}>{cm.message} ({cm.author})</li>
+            return <li key={cm.sha}>
+                <a href="#" onClick={(e) => this.props.onSelectedCommit(cm, e)}>{cm.message} ({cm.author})</a>
+            </li>
         });
         return (
             <ul>{commits}</ul>
