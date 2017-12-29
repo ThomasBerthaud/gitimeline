@@ -1,24 +1,30 @@
 {
   "name": "gitimeline",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "SPA that shows a timeline of git commits on a repo",
   "main": "app.js",
+  "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start",
+    "start-api": "nodemon app.js",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
     "clean": "rm -rf repos/*"
   },
   "author": "Thomas Berthaud",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.1",
     "express": "^4.14.1",
     "font-awesome": "^4.7.0",
     "github-colors": "^2.2.10",
     "highlightjs": "^9.8.0",
     "nodegit": "^0.20.3",
-    "underscore": "^1.8.3",
-    "vue": "^2.1.10",
-    "vue-resource": "^1.2.0"
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "^1.0.17",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "morgan": "^1.8.0"

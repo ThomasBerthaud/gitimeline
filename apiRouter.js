@@ -1,18 +1,7 @@
 var path = require('path');
 var Git = require('nodegit');
-var GithubColor = require('github-colors');
 var _ = require('underscore');
 var router = require('express').Router();
-
-router.get('/GithubColors/ext(/:extension)?', function (req, res) {
-    if (!req.params.extension) {
-        var extensions = GithubColor.init(true);
-        res.json(extensions);
-    } else {
-        var extInfos = GithubColor.ext(req.params.extension);
-        res.send(extInfos);
-    }
-});
 
 router.get('/repos/:owner/:repoName/commits', function (req, res) {
     getGitRepo(req.params).then(function (repo) {

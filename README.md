@@ -5,11 +5,16 @@ little project displaying infos on a repo github. It shows through graphics the 
 ## INSTALLATION ##
 ```npm install```
 
+## START THE REACT DEV SERVER ##
+```npm start```
 
-## START ##
-```node app.js``` or ```npm start```
+## BUILD REACT FOR PRODUCTION ##
+```npm run build```
 
-server's address: http://localhost:3000
+## START THE API SERVER ##
+```npm start-api```
+
+server's address: http://localhost:3001
 
 
 ## UTILS ##
