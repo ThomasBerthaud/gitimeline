@@ -15,7 +15,7 @@
     "font-awesome": "^4.7.0",
     "github-colors": "^2.2.10",
     "highlightjs": "^9.8.0",
-    "nodegit": "^0.17.0",
+    "nodegit": "^0.20.3",
     "underscore": "^1.8.3",
     "vue": "^2.1.10",
     "vue-resource": "^1.2.0"
