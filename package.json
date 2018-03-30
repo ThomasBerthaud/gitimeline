@@ -20,15 +20,15 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
-    "express": "^4.14.1",
+    "express": "^4.16.3",
     "font-awesome": "^4.7.0",
-    "github-colors": "^2.2.10",
+    "github-colors": "^2.2.17",
     "highlightjs": "^9.8.0",
     "nodegit": "^0.20.3",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "^1.0.17",
+    "react-scripts": "^1.1.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
