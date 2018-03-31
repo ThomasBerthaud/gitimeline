@@ -10,4 +10,8 @@ export default class Api {
 
     return axios.get(commitsUrl);
   }
+
+  static getCommit(sha) {
+    let url = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files/${file.path}`;
+  }
 }

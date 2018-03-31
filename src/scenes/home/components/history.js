@@ -1,32 +1,28 @@
-import React, {Component} from 'react';
-import GithubColors from 'github-colors';
+import React, { Component } from "react";
+import GithubColors from "github-colors";
+import { Link } from "react-router-dom";
 
-class History extends Component {
-    constructor(props) {
-        super(props);
-        this.gitHubColors = GithubColors.init(true);
-    }
+export default class History extends Component {
+  gitHubColors = GithubColors.init(true);
 
-    render() {
-        const commits = this.props.commits.map(cm => {
-            return <li key={cm.sha}>
-                <a href="#" onClick={(e) => this.props.onSelectedCommit(cm, e)}>{cm.message} ({cm.author})</a>
-            </li>
-        });
-        return (
-            <ul>{commits}</ul>
-        )
-    }
+  render() {
+    const commits = this.props.commits.map(cm => {
+      return (
+        <li key={cm.sha}>
+          <Link to={`/commit/${cm.sha}`}>{cm.message} ({cm.author})</Link>
+        </li>
+      );
+    });
+    return <ul>{commits}</ul>;
+  }
 
-    calcColor(name) {
-        if (name) {
-            let ext = name.split('.')[name.split('.').length - 1];
-            if (this.gitHubColors[ext] && this.gitHubColors[ext].color) {
-                return this.gitHubColors[ext].color;
-            }
-        }
-        return "#ccc";
+  calcColor(name) {
+    if (name) {
+      let ext = name.split(".")[name.split(".").length - 1];
+      if (this.gitHubColors[ext] && this.gitHubColors[ext].color) {
+        return this.gitHubColors[ext].color;
+      }
     }
+    return "#ccc";
+  }
 }
-
-export default History;
