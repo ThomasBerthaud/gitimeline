@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.17.1",
+    "d3": "^5.0.0",
     "express": "^4.16.3",
     "font-awesome": "^4.7.0",
     "github-colors": "^2.2.17",

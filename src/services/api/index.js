@@ -8,10 +8,12 @@ export default class Api {
     let repo = infos.slice(-1);
     let commitsUrl = `${config.apiUrl}/repos/${owner}/${repo}/commits`;
 
-    return axios.get(commitsUrl);
+    return axios.get(commitsUrl).then((request) => request.data);
   }
 
-  static getCommit(sha) {
-    let url = `${apiUrl}/repos/${this.repoInfos.owner}/${this.repoInfos.repo}/commits/${this.commitSelected}/files/${file.path}`;
+  static getCommit(owner, repo, sha) {
+    let url = `${config.apiUrl}/repos/${owner}/${repo}/commits/${sha}/files`;
+
+    return axios.get(url).then((request) => request.data);
   }
 }

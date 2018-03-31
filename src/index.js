@@ -1,8 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter, Route } from "react-router-dom";
-import Home from "./scenes/home/index";
-import Commit from "./scenes/commit/index";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Navbar from "./components/navbar";
+import Home from "./scenes/home";
+import Commit from "./scenes/commit";
 import "./styles.css";
 import "font-awesome/css/font-awesome.min.css";
 import "highlightjs/styles/atom-one-dark.css";
@@ -10,8 +11,11 @@ import "highlightjs/styles/atom-one-dark.css";
 ReactDOM.render(
   <BrowserRouter>
     <div>
-      <Route exact path="/" component={Home} />
-      <Route path="/commit/:id" component={Commit} />
+      <Navbar />
+      <Switch>
+        <Route path="/owner/:owner/repo/:repo/commit/:sha" component={Commit} />
+        <Route path="/" component={Home} />
+      </Switch>
     </div>
   </BrowserRouter>,
   document.getElementById("root")

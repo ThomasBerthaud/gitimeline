@@ -1,0 +1,20 @@
+/*NAVBAR************************/
+
+/******************************************/
+
+/*FILE DETAILS******************************/
+#file-details > .header{
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+}
+#file-details > .header > .close{
+    cursor: pointer;
+}
+
+#file-details > pre {
+    margin: 0px;
+}
+/***************************************************/
+
+/*D3 GRAPH*******************************************/

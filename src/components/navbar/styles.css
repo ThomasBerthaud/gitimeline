@@ -1,0 +1,43 @@
+#nav{
+  padding: 10px;
+  background-color: #1E2327;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.input-round{
+  border-radius: 3px;
+  padding: 5px;
+  background-color: rgba(255,255,255,0.125);
+  color: #fff;
+  border: none;
+}
+
+#repo-input{
+  width: 200px;
+}
+
+.input-round > option{
+  color: black;
+}
+
+.btn{
+  background: none;
+  border: 0px;
+  font-size: 20px;
+  color: inherit;
+  vertical-align: middle;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn:hover{
+  color: white;
+}
+.btn:focus{
+  outline: 0px;
+}
+
+.error {
+  color: #DD3333;
+  font-weight: bold;
+}
