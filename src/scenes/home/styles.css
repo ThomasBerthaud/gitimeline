@@ -1,0 +1,13 @@
+.btn{
+  background: none;
+  border: 0px;
+  font-size: 20px;
+  color: inherit;
+  vertical-align: middle;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.btn:focus{
+  outline: 0px;
+}
