@@ -1,32 +1,39 @@
-.node {
-  cursor: pointer;
+#main {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  float: left;
+  width: 750px;
 }
 
-.node:hover {
-  stroke: #000;
-  stroke-width: 1.5px;
+#sequence {
+  width: 600px;
+  height: 50px;
 }
 
-.node--leaf {
-  fill: white;
+#sequence text {
+  font-weight: 600;
+  fill: #fff;
 }
 
-.label {
-  font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+#chart {
+  position: relative;
 }
 
-.label,
-.node--root{
-  pointer-events: none;
+#chart path {
+  stroke: #fff;
 }
-/****************************************************/
 
-/*TRANSITIONS****************************************/
-.fade-enter-active, .fade-leave-active {
-transition: opacity .2s
+#explanation {
+  position: absolute;
+  top: 260px;
+  left: 300px;
+  width: 150px;
+  text-align: center;
+  color: #666;
+  z-index: -1;
 }
-.fade-enter, .fade-leave-to {
-opacity: 0
+
+#percentage {
+  font-size: 2.5em;
 }
