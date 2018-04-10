@@ -3,38 +3,36 @@ var Git = require("nodegit");
 var _ = require("underscore");
 var router = require("express").Router();
 
-router.get("/repos/:owner/:repoName/commits", function(req, res) {
-  getGitRepo(req.params)
-    .then(function(repo) {
-      return repo.getHeadCommit().then(function(firstComm) {
-        var history = firstComm.history();
-        var list = [];
+router.get("/repos/:owner/:repoName/commits", async (req, res) => {
+  try {
+    const repo = await getGitRepo(req.params);
+    const firstComm = await repo.getHeadCommit();
+    var history = firstComm.history();
+    var list = [];
 
-        history.on("commit", function(commit) {
-          list.push({
-            date: commit.date(),
-            author: commit.committer().name(),
-            message: commit.message(),
-            sha: commit.sha()
-          });
-        });
-
-        history.on("end", function() {
-          res.status(200).json(list);
-        });
-
-        history.on("error", function(err) {
-          console.log(err);
-          res.status(500).send();
-        });
-
-        history.start();
+    history.on("commit", (commit) => {
+      list.push({
+        date: commit.date(),
+        author: commit.committer().name(),
+        message: commit.message(),
+        sha: commit.sha()
       });
-    })
-    .catch(function(err) {
+    });
+
+    history.on("end", function() {
+      res.status(200).json(list);
+    });
+
+    history.on("error", function(err) {
       console.log(err);
       res.status(404).send();
     });
+
+    history.start();
+  } catch (err) {
+    console.log(err);
+    res.status(404).send();
+  }
 });
 
 router.get("/repos/:owner/:repoName/commits/:sha/files", async (req, res) => {
@@ -48,7 +46,7 @@ router.get("/repos/:owner/:repoName/commits/:sha/files", async (req, res) => {
 
     walker.on("end", async trees => {
       trees.forEach(async entry => {
-        let node = {name: entry.name()};
+        let node = { name: entry.name() };
         let hook = filesTree.children;
         if (entry.isFile()) {
           node.size = 0;
@@ -64,7 +62,6 @@ router.get("/repos/:owner/:repoName/commits/:sha/files", async (req, res) => {
         } else {
           node.children = [];
         }
-        console.log(entry.path())
         entry
           .path()
           .split("/")
@@ -75,7 +72,6 @@ router.get("/repos/:owner/:repoName/commits/:sha/files", async (req, res) => {
         hook.push(node);
       });
       await Promise.all(promises);
-      console.log(filesTree);
       res.status(200).send(filesTree);
     });
     walker.start();
