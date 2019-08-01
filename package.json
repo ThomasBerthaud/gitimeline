@@ -4,8 +4,12 @@
   "description": "SPA that shows a timeline of git commits on a repo",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit",
+    "start": "node api/app.js",
+    "test:api": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf repos/*"
   },
   "author": "Thomas Berthaud",
@@ -17,10 +21,34 @@
     "highlightjs": "^9.12.0",
     "nodegit": "^0.24.3",
     "underscore": "^1.9.1",
+    "core-js": "^2.6.5",
     "vue": "^2.6.10",
-    "vue-resource": "^1.5.0"
+    "vue-router": "^3.0.7",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.9.0",
+    "@vue/cli-plugin-eslint": "^3.9.0",
+    "@vue/cli-plugin-unit-jest": "^3.9.0",
+    "@vue/cli-service": "^3.9.0",
+    "@vue/eslint-config-prettier": "^4.0.1",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "lint-staged": "^8.1.5",
+    "vue-template-compiler": "^2.6.10",
     "morgan": "^1.9.1"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,vue}": [
+      "vue-cli-service lint",
+      "git add"
+    ]
   }
 }
