@@ -7,7 +7,7 @@ little project displaying infos on a repo github. It shows through graphics the 
 
 
 ## START ##
-``npm start```
+```npm start```
 
 server's address: http://localhost:3000
 
