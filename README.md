@@ -7,7 +7,7 @@ little project displaying infos on a repo github. It shows through graphics the 
 
 
 ## START ##
-```node app.js``` or ```npm start```
+``npm start```
 
 server's address: http://localhost:3000
 
