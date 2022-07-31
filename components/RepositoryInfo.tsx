@@ -1,15 +1,15 @@
 import { Repository } from '../types/UserRepositories';
 import React from 'react';
 
-type RepositoryProps = {
+type RepositoryInfoProps = {
   repository: Repository;
 };
 
-export const RepositoryLine: React.FC<RepositoryProps> = ({ repository }) => {
+export const RepositoryInfo: React.FC<RepositoryInfoProps> = ({ repository }) => {
   return (
-    <div className="">
+    <div className="m-2">
       <RepositoryMarker />
-      <h6 className="text-lg font-bold">{repository.name}</h6>
+      <h4 className="text-lg font-bold">{repository.name}</h4>
       <a href={repository.url} className="link text-xs mx-1">
         ({repository.url})
       </a>

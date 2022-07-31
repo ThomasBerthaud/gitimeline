@@ -1,12 +1,11 @@
 import { GetServerSideProps, NextPage } from 'next';
-import { getUserRepositories } from '../../lib/user-timeline/getUserRepositories';
+import { getUserRepositories } from '../../lib/getUserRepositories';
 import { UserRepositories } from '../../types/UserRepositories';
-import { RepositoryLine } from '../../components/RepositoryLine';
+import { RepositoryInfo } from '../../components/RepositoryInfo';
 
 export const getServerSideProps: GetServerSideProps<UserTimelineProps, { userId: string }> = async (context) => {
-  const user = await getUserRepositories(context.params!.userId);
   return {
-    props: { userRepositories: user },
+    props: { userRepositories: await getUserRepositories(context.params!.userId) },
   };
 };
 
@@ -16,11 +15,11 @@ type UserTimelineProps = {
 
 const UserTimeline: NextPage<UserTimelineProps> = ({ userRepositories }) => {
   const repositories = userRepositories.repositories.nodes.map((node) => (
-    <RepositoryLine key={node.id} repository={node} />
+    <RepositoryInfo key={node.id} repository={node} />
   ));
   return (
     <div className="my-3">
-      <h4 className="text-lg font-bold my-2">{userRepositories.name}</h4>
+      <h3 className="text-lg font-bold my-2">{userRepositories.name}</h3>
       {repositories}
     </div>
   );

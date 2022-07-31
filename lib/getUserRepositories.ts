@@ -1,7 +1,7 @@
-import { UserRepositories } from '../../types/UserRepositories';
-import { dataSource } from '../../io/dataSource';
+import { UserRepositories } from '../types/UserRepositories';
+import { dataSource } from '../io/dataSource';
 
-const getUserRepositoriesQuery = /* GraphQL */ `
+export const getUserRepositoriesQuery = /* GraphQL */ `
   query getUserRepositoriesQuery($userId: String!, $nbRepositories: Int = 10) {
     user(login: $userId) {
       name
