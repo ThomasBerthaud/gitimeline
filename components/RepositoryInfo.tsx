@@ -1,4 +1,4 @@
-import { Repository } from '../types/UserRepositories';
+import { Repository } from '../lib/types/UserRepositories';
 import React from 'react';
 
 type RepositoryInfoProps = {

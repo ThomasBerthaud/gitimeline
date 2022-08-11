@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import { getUserRepositories } from '../../lib/getUserRepositories';
-import { UserRepositories } from '../../types/UserRepositories';
+import { UserRepositories } from '../../lib/types/UserRepositories';
 import { RepositoryInfo } from '../../components/RepositoryInfo';
 
 export const getServerSideProps: GetServerSideProps<UserTimelineProps, { userId: string }> = async (context) => {

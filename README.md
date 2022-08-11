@@ -1,5 +1,8 @@
 # GitHub Timeline
 
+implementation of an app idea from [app-ideas](https://github.com/florinpop17/app-ideas/blob/master/Projects/3-Advanced/GitHub-Timeline-App.md)
+
+
 **Tier:** 3-Advanced
 
 API's and graphical representation of information are hallmarks of modern
@@ -66,6 +69,29 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Build for production
+
+build for production: 
+
+```bash
+npm run build
+```
+
+start the application in production mode: 
+```bash
+npm start
+```
+The application will start at http://localhost:3000 by default. The default port can be changed with -p, like so:
+```bash
+npm start -p 4000
+```
+
+## Run linter
+
+run ESLint for all files in the `pages`, `components`, and `lib` directories.
+```bash
+npm run lint
+```
 ## Run tests
 
 First run unit tests:
@@ -73,3 +99,9 @@ First run unit tests:
 ```bash
 npm test
 ```
+
+You can also generate a test coverage:
+```bash
+npm run coverage
+```
+see result in `coverage` folder
