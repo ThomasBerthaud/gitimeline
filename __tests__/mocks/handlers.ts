@@ -1,4 +1,4 @@
-import { UserRepositories } from '../../types/UserRepositories';
+import { UserRepositories } from '../../lib/types/UserRepositories';
 import { graphql } from 'msw';
 
 export const userRepositories: UserRepositories = {
