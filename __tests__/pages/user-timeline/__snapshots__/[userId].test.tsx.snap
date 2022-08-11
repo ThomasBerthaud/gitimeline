@@ -1,0 +1,61 @@
+// Vitest Snapshot v1
+
+exports[`user timeline page > should display user's  timeline 1`] = `
+<DocumentFragment>
+  <div
+    class="my-3"
+  >
+    <h3
+      class="text-lg font-bold my-2"
+    >
+      user
+    </h3>
+    <div
+      class="m-2"
+    >
+      <div
+        class="bg-amber-50 rounded-full border-2 border-amber-200 w-4 h-4 m-2"
+      />
+      <h4
+        class="text-lg font-bold"
+      >
+        repo
+      </h4>
+      <a
+        class="link text-xs mx-1"
+        href="repoUrl"
+      >
+        (repoUrl)
+      </a>
+      <div
+        class="text-italic"
+      >
+        2021-07-11T18:45:06Z
+      </div>
+    </div>
+    <div
+      class="m-2"
+    >
+      <div
+        class="bg-amber-50 rounded-full border-2 border-amber-200 w-4 h-4 m-2"
+      />
+      <h4
+        class="text-lg font-bold"
+      >
+        repo2
+      </h4>
+      <a
+        class="link text-xs mx-1"
+        href="repoUrl2"
+      >
+        (repoUrl2)
+      </a>
+      <div
+        class="text-italic"
+      >
+        2022-07-11T18:45:06Z
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
