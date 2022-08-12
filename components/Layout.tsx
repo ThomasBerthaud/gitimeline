@@ -1,5 +1,7 @@
 import React, { ReactNode } from 'react';
 import Head from 'next/head';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 type LayoutProps = {
   children: ReactNode;
@@ -7,15 +9,15 @@ type LayoutProps = {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <>
+    <div className="flex flex-col items-center">
       <Head>
         <title>Gitimeline</title>
         <meta name="description" content="Shows a timeline of git commits on a repository" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      Header
-      <main>{children}</main>
-      Footer
-    </>
+      <Header />
+      <main className="container min-h-screen">{children}</main>
+      <Footer />
+    </div>
   );
 };

@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.link {
-  @apply underline hover:text-sky-700;
-}
-
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -14,4 +10,12 @@
     color: white;
     @apply bg-slate-800;
   }
+}
+
+button {
+  @apply border p-4 rounded transition-colors;
+}
+
+input {
+  @apply border p-1 rounded-sm transition-colors;
 }

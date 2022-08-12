@@ -1,41 +1,37 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
+import { useState } from 'react';
 import styles from '../styles/Home.module.css';
-import Link from 'next/link';
 
 const Home: NextPage = () => {
+  const [userName, setUserName] = useState<string | null>(null);
+  const [repository, setRepository] = useState<string | null>(null);
+
+  const searchUser = () => {};
+  const searchRepository = () => {};
+
   return (
-    <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className="font-bold">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+    <>
+      <h1 className="font-bold text-3xl text-center my-8">Search for a Github user or repository</h1>
 
-        <p>
-          <Image src={'/images/profile.jpeg'} alt={'profile image'} width={100} height={100} />
-        </p>
+      <div className="flex items-center justify-center">
+        <section className={styles.section}>
+          <label htmlFor="user-name">Username :</label>
+          <input id="user-name" name="user-name" type="text" onChange={(event) => setUserName(event.target.value)} />
+          <button onClick={searchUser}>Search User</button>
+        </section>
 
-        <div className={styles.grid}>
-          <Link href={'/user-timeline/ThomasBerthaud'} className={styles.card}>
-            <h2>Voir utilisateur test</h2>
-          </Link>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
+        <section className={styles.section}>
+          <label htmlFor="repository">Repository :</label>
+          <input
+            id="repository"
+            name="repository"
+            type="text"
+            onChange={(event) => setRepository(event.target.value)}
+          />
+          <button onClick={searchRepository}>Search Repository</button>
+        </section>
+      </div>
+    </>
   );
 };
 

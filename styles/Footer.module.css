@@ -1,0 +1,9 @@
+.logo {
+  @apply ml-2 h-1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo img {
+    filter: invert(1);
+  }
+}
