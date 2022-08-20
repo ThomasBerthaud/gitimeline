@@ -15,7 +15,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <meta name="description" content="Shows a timeline of git commits on a repository" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header />
       <main className="container min-h-screen">{children}</main>
       <Footer />
     </div>

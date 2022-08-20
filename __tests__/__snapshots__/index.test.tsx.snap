@@ -1,0 +1,67 @@
+// Vitest Snapshot v1
+
+exports[`index page > should display home page 1`] = `
+<DocumentFragment>
+  <h1
+    class="font-bold text-3xl text-center my-20"
+  >
+    Search for a Github user or repository
+  </h1>
+  <div
+    class="flex justify-center h-full"
+  >
+    <section
+      class="_section_diuk4_1 _left_diuk4_9"
+    >
+      <label
+        class="self-start"
+        for="value-Username"
+      >
+        Username
+      </label>
+      <input
+        class="w-full mb-6"
+        id="value-Username"
+        name="value-Username"
+        type="text"
+      />
+      <button
+        class="w-full"
+      >
+        Search User
+      </button>
+    </section>
+    <div
+      class="relative border"
+      style="width: 1px;"
+    >
+      <div
+        class="absolute top-1/2 left-0 -translate-x-1/2 bg-white text-xl font-bold"
+      >
+        Or
+      </div>
+    </div>
+    <section
+      class="_section_diuk4_1 _right_diuk4_17"
+    >
+      <label
+        class="self-start"
+        for="value-Repository"
+      >
+        Repository
+      </label>
+      <input
+        class="w-full mb-6"
+        id="value-Repository"
+        name="value-Repository"
+        type="text"
+      />
+      <button
+        class="w-full"
+      >
+        Search Repository
+      </button>
+    </section>
+  </div>
+</DocumentFragment>
+`;
