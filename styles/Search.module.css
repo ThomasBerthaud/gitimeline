@@ -1,5 +1,5 @@
 .section {
-  @apply flex flex-col items-center px-5 h-full w-1/2 rounded-lg transition-transform;
+  @apply flex flex-col items-center px-5 w-1/2 rounded-lg transition-transform;
 }
 .section:hover,
 .section:focus-within {
@@ -7,17 +7,9 @@
 }
 
 .left {
-  transform-origin: middle left;
-}
-.left:hover,
-.left:focus-within {
-  @apply bg-lime-600 border-lime-600;
+  @apply justify-start;
 }
 
 .right {
-  transform-origin: middle right;
-}
-.right:hover,
-.left:focus-within {
-  @apply bg-sky-600 border-sky-600;
+  @apply justify-end;
 }
