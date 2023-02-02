@@ -18,7 +18,7 @@
     "nodegit": "^0.24.3",
     "underscore": "^1.9.1",
     "vue": "^2.6.10",
-    "vue-resource": "^1.5.0"
+    "vue-resource": "^1.5.3"
   },
   "devDependencies": {
     "morgan": "^1.9.1"
